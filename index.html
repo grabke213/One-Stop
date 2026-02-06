@@ -8,8 +8,6 @@
   <style>
     :root{
       --bg:#0b1220;
-      --panel:#0f1a2e;
-      --panel2:#111f38;
       --text:#e9eefc;
       --muted:#9fb0d6;
       --accent:#4da3ff;
@@ -48,8 +46,10 @@
       backdrop-filter: blur(10px);
     }
     .brand{ display:flex; align-items:center; gap:12px; min-width: 260px; }
+
+    /* Dashboard logo size */
     #logo{
-      width: 220px; /* dashboard logo size */
+      width: 240px;         /* <- make bigger/smaller */
       padding:10px;
       border-radius: 12px;
       border:1px solid rgba(255,255,255,.08);
@@ -58,8 +58,9 @@
       align-items:center;
     }
     #logo svg{ width:100%; height:auto; display:block; }
+
     .brandText{ display:flex; flex-direction:column; gap:2px; }
-    .brandText .title{ font-weight:800; font-size:16px; line-height:1.1; }
+    .brandText .title{ font-weight:900; font-size:16px; line-height:1.1; }
     .brandText .sub{ font-size:12px; color:var(--muted); line-height:1.2; }
 
     .controls{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
@@ -97,12 +98,12 @@
     .btn.green{ background: linear-gradient(180deg, rgba(110,231,183,.22), rgba(110,231,183,.10)); border-color: rgba(110,231,183,.32); }
     .btn.danger{ background: linear-gradient(180deg, rgba(255,107,107,.18), rgba(255,107,107,.10)); border-color: rgba(255,107,107,.35); }
 
-    /* Cards/layout */
+    /* Layout */
     .grid{ margin-top:14px; display:grid; grid-template-columns: 1.1fr .9fr; gap:14px; }
     @media (max-width: 980px){
       .grid{ grid-template-columns: 1fr; }
       .brand{ min-width: unset; }
-      #logo{ width: 200px; }
+      #logo{ width: 210px; }
     }
     .card{
       border:1px solid var(--border);
@@ -146,8 +147,7 @@
     .kpiBox .label{ font-size:11px; color: var(--muted); }
     .kpiBox .value{ margin-top:6px; font-size:20px; font-weight:900; }
 
-    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-
+    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:space-between; }
     .divider{ height:1px; background: rgba(255,255,255,.08); margin:12px 0; }
 
     /* Checklist items */
@@ -170,7 +170,7 @@
       cursor:pointer;
     }
     .itemText{ min-width:0; flex:1; }
-    .itemTitle{ font-weight:800; font-size:13px; margin:0; }
+    .itemTitle{ font-weight:900; font-size:13px; margin:0; }
     .itemDesc{ margin:6px 0 0; color: var(--muted); font-size:12px; line-height: 1.35; }
 
     textarea{
@@ -223,15 +223,26 @@
       transition: opacity .18s ease, transform .18s ease;
     }
     .toast.show{ opacity:1; transform:translateX(-50%) translateY(-4px); }
+
+    /* Debug tag to confirm you’re seeing the newest deploy (remove later if you want) */
+    .buildTag{
+      position:fixed; top:10px; left:10px; z-index:9999;
+      background:#ff6b6b; color:#111; font-weight:900;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(0,0,0,.25);
+      font-size:12px;
+    }
   </style>
 </head>
 
 <body>
+  <!-- If you see this, you’re on the NEW build -->
+  <div class="buildTag">LIVE BUILD: 2026-02-06</div>
+
   <div class="wrap">
-    <!-- TOP BAR -->
     <div class="topbar">
       <div class="brand">
-        <!-- Inline SVG logo (never broken) -->
+        <!-- INLINE SVG LOGO (no broken links, no <img>) -->
         <div id="logo" aria-label="One Stop Systems Logo">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 380" role="img" aria-label="One Stop Systems">
             <defs>
@@ -257,7 +268,7 @@
 
         <div class="brandText">
           <div class="title">One Stop Systems</div>
-          <div class="sub">Clean dashboard • simple checklist • printable reports</div>
+          <div class="sub">Dashboard first • Checklist • Print-ready reports</div>
         </div>
       </div>
 
@@ -266,22 +277,20 @@
           <span>Shop</span>
           <select id="shopSelect"></select>
         </div>
-
         <button class="btn green" id="btnPitch" type="button">Pitch Mode</button>
         <button class="btn primary" id="btnPrint" type="button">Print Report</button>
         <button class="btn danger opsOnly" id="btnReset" type="button">Reset Shop</button>
       </div>
     </div>
 
-    <!-- IMPORTANT: Dashboard Overview is FIRST -->
+    <!-- DASHBOARD OVERVIEW FIRST -->
     <div class="grid">
-      <!-- LEFT: DASHBOARD OVERVIEW -->
       <div class="card">
         <div class="cardHeader">
           <div>
             <h2>Dashboard Overview</h2>
-            <p class="opsOnly">This is the “at a glance” view. Completion, status, last updated, and quick actions.</p>
-            <p class="pitchOnly">Demo view: shows readiness and a clean “what MPI sees” workflow.</p>
+            <p class="opsOnly">Completion, status, last updated, and notes — saved per shop.</p>
+            <p class="pitchOnly">Clean demo mode for presentations.</p>
           </div>
           <div class="tag" id="statusTag">Loading…</div>
         </div>
@@ -307,9 +316,9 @@
 
           <div class="divider"></div>
 
-          <div class="row" style="justify-content:space-between;">
+          <div class="row">
             <div class="small">
-              <b>Quick tip:</b> Tap <b>Print Report</b> to generate a clean report with your logo and copyright.
+              <b>Quick tip:</b> Tap <b>Print Report</b> to produce a clean report with your logo and copyright.
             </div>
             <div class="tag opsOnly">Saved per shop</div>
           </div>
@@ -326,12 +335,11 @@
         </div>
       </div>
 
-      <!-- RIGHT: REPORT PREVIEW -->
       <div class="card">
         <div class="cardHeader">
           <div>
             <h2>Report Preview</h2>
-            <p>What prints. Built to work on mobile (opens and prints directly from your tap).</p>
+            <p>What prints. Built to work on mobile (opens + prints directly from your tap).</p>
           </div>
           <div class="tag">Print-ready</div>
         </div>
@@ -342,7 +350,6 @@
         </div>
       </div>
 
-      <!-- FULL WIDTH: CHECKLIST (comes after overview) -->
       <div class="card" style="grid-column: 1 / -1;">
         <div class="cardHeader">
           <div>
@@ -365,26 +372,17 @@
   <div class="toast" id="toast">Saved</div>
 
   <script>
-    /**********************************************************************
-     * One Stop Systems — Single File Index (FIXED + CLEAN)
-     * - Inline SVG logo (never broken)
-     * - Dashboard Overview is the first thing you see
-     * - Mobile-safe printing (open/write/print inside the button click)
-     * - Per-shop checklist + notes saved in localStorage
-     * - Pitch mode toggle (clean presentation)
-     **********************************************************************/
-
-    // === YEAR ===
+    // YEAR
     document.getElementById("year").textContent = String(new Date().getFullYear());
 
-    // === DEMO SHOPS ===
+    // SHOPS
     const SHOPS = [
       { key: "shop_a", name: "Pilot Shop A" },
       { key: "shop_b", name: "Pilot Shop B" },
       { key: "shop_c", name: "Pilot Shop C" }
     ];
 
-    // === CHECKLIST TEMPLATE ===
+    // CHECKLIST
     const CHECKLIST_TEMPLATE = [
       { id:"licensing", title:"Business licensing & shop registration", desc:"Confirm shop is registered (permits, insurance) and documents are current.", category:"Admin" },
       { id:"equipment", title:"Equipment inspection & calibration", desc:"Verify hoists/lifts, torque wrenches, scanners and tools are within inspection/calibration intervals.", category:"Equipment" },
@@ -395,7 +393,6 @@
       { id:"documentation", title:"Audit-ready documentation packet", desc:"Required forms, policies, and logs can be exported/printed instantly for review.", category:"Admin" }
     ];
 
-    // === STATE ===
     let selectedShopKey = localStorage.getItem("selectedShopKey") || SHOPS[0].key;
     let pitchMode = localStorage.getItem("pitchMode") === "1";
 
@@ -404,7 +401,6 @@
       const pad = (n)=> String(n).padStart(2,"0");
       return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
-
     function shopStorageKey(shopKey){ return `oneStopShopState:${shopKey}`; }
 
     function defaultShopState(){
@@ -442,23 +438,22 @@
       setTimeout(()=> t.classList.remove("show"), 1200);
     }
 
-    // === SHOP SELECT ===
+    // SHOP SELECT
     const shopSelect = document.getElementById("shopSelect");
-    SHOPS.forEach(s=>{
+    for (const s of SHOPS){
       const opt = document.createElement("option");
       opt.value = s.key;
       opt.textContent = s.name;
       shopSelect.appendChild(opt);
-    });
+    }
     shopSelect.value = selectedShopKey;
 
-    // === RENDER CHECKLIST ===
     function renderChecklist(){
       const state = loadShopState(selectedShopKey);
       const host = document.getElementById("checklist");
       host.innerHTML = "";
 
-      CHECKLIST_TEMPLATE.forEach(item=>{
+      for (const item of CHECKLIST_TEMPLATE){
         const row = document.createElement("div");
         row.className = "item";
 
@@ -473,7 +468,7 @@
           next.checks[item.id] = cb.checked;
           next.updatedAt = nowStamp();
           saveShopState(selectedShopKey, next);
-          updateAll(false);
+          updateAll();
         });
 
         const text = document.createElement("div");
@@ -501,12 +496,11 @@
         row.appendChild(tag);
 
         host.appendChild(row);
-      });
+      }
 
       document.getElementById("notes").value = state.notes || "";
     }
 
-    // === KPI + STATUS ===
     function updateKpis(){
       const state = loadShopState(selectedShopKey);
       const total = CHECKLIST_TEMPLATE.length;
@@ -534,7 +528,6 @@
       }
     }
 
-    // === REPORT HTML BUILDER (used for preview and print) ===
     function escapeHtml(str){
       return String(str || "")
         .replaceAll("&","&amp;")
@@ -620,41 +613,40 @@
       document.getElementById("btnPitch").textContent = pitchMode ? "Exit Pitch Mode" : "Pitch Mode";
     }
 
-    function updateAll(showToast){
+    function updateAll(){
       renderChecklist();
       updateKpis();
       updatePreview();
-      if (showToast) toast("Updated");
     }
 
-    // === SAVE NOTES ===
+    // Save notes
     document.getElementById("btnSaveNotes").addEventListener("click", ()=>{
       const state = loadShopState(selectedShopKey);
       state.notes = document.getElementById("notes").value || "";
       state.updatedAt = nowStamp();
       saveShopState(selectedShopKey, state);
       toast("Notes saved");
-      updateAll(false);
+      updateAll();
     });
 
-    // === SHOP CHANGE ===
+    // Change shop
     shopSelect.addEventListener("change", ()=>{
       selectedShopKey = shopSelect.value;
       localStorage.setItem("selectedShopKey", selectedShopKey);
-      updateAll(false);
       toast("Shop loaded");
+      updateAll();
     });
 
-    // === RESET SHOP ===
+    // Reset shop
     document.getElementById("btnReset").addEventListener("click", ()=>{
       const cleared = defaultShopState();
       cleared.updatedAt = nowStamp();
       saveShopState(selectedShopKey, cleared);
       toast("Shop reset");
-      updateAll(false);
+      updateAll();
     });
 
-    // === PITCH TOGGLE ===
+    // Pitch mode
     document.getElementById("btnPitch").addEventListener("click", ()=>{
       pitchMode = !pitchMode;
       localStorage.setItem("pitchMode", pitchMode ? "1" : "0");
@@ -662,9 +654,8 @@
       toast(pitchMode ? "Pitch mode on" : "Pitch mode off");
     });
 
-    // === PRINT (mobile safe) ===
+    // PRINT (mobile safe) — inline SVG in print window too (no <img>)
     function logoSvgForPrint(){
-      // separate gradient id so it won't clash with the page
       return `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 380" role="img" aria-label="One Stop Systems">
           <defs>
@@ -689,16 +680,12 @@
       `;
     }
 
-    function openPrintWindow({ title, contentHTML }) {
-      // MUST be inside the click handler
+    function openPrintWindow({ title, contentHTML }){
       const w = window.open("", "_blank", "noopener,noreferrer");
-      if (!w) {
-        alert("Pop-up blocked. Please allow pop-ups to print.");
-        return;
-      }
+      if (!w) { alert("Pop-up blocked. Please allow pop-ups to print."); return; }
 
       const year = new Date().getFullYear();
-      const LOGO_WIDTH_PX = 300; // print logo size (change to 340/380 if you want bigger)
+      const LOGO_WIDTH_PX = 320; // <- print logo size
 
       const html = `
 <!doctype html>
@@ -737,13 +724,11 @@
   <div class="footer">© ${year} One Stop Systems. All rights reserved.</div>
 
   <script>
-    // Inline SVG loads instantly; still keep a tiny delay for mobile stability
     setTimeout(function(){ window.focus(); window.print(); }, 50);
   <\/script>
 </body>
 </html>
       `;
-
       w.document.open();
       w.document.write(html);
       w.document.close();
@@ -754,9 +739,9 @@
       openPrintWindow({ title: "One Stop Systems Report", contentHTML });
     });
 
-    // === INIT ===
+    // INIT
     applyPitchMode();
-    updateAll(false);
+    updateAll();
   </script>
 </body>
 </html>
