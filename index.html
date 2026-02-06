@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>One Stop Systems — MPI Checklist Prototype</title>
+  <title>One Stop Systems — Dashboard</title>
 
   <style>
     :root{
@@ -19,34 +19,25 @@
       --shadow:0 10px 30px rgba(0,0,0,.30);
       --radius:16px;
     }
-
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      background: radial-gradient(1200px 700px at 20% 0%, rgba(77,163,255,.18), transparent 60%),
-                  radial-gradient(900px 600px at 90% 30%, rgba(110,231,183,.10), transparent 60%),
-                  var(--bg);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background:
+        radial-gradient(1200px 700px at 20% 0%, rgba(77,163,255,.18), transparent 60%),
+        radial-gradient(900px 600px at 90% 30%, rgba(110,231,183,.10), transparent 60%),
+        var(--bg);
       color:var(--text);
     }
-
-    a{ color:inherit; text-decoration:none; }
     button, input, select, textarea{ font:inherit; }
 
-    .wrap{
-      max-width:1100px;
-      margin:0 auto;
-      padding:18px 16px 60px;
-    }
+    .wrap{ max-width:1100px; margin:0 auto; padding:16px 14px 60px; }
 
-    /* Header */
+    /* Top bar */
     .topbar{
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:space-between;
-      padding:14px 14px;
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+      padding:14px;
       border:1px solid var(--border);
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
       border-radius: calc(var(--radius) + 6px);
@@ -56,55 +47,24 @@
       z-index: 20;
       backdrop-filter: blur(10px);
     }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      min-width: 220px;
-    }
-
-    /* Bigger logo on the main dashboard */
+    .brand{ display:flex; align-items:center; gap:12px; min-width: 260px; }
     #logo{
-      width: 220px; /* change to 260px if you want bigger */
-      height:auto;
-      display:block;
-      object-fit:contain;
+      width: 220px; /* dashboard logo size */
+      padding:10px;
       border-radius: 12px;
       border:1px solid rgba(255,255,255,.08);
       background: rgba(255,255,255,.04);
-      padding:10px;
-    }
-
-    .brandText{
       display:flex;
-      flex-direction:column;
-      gap:2px;
-    }
-    .brandText .title{
-      font-weight:800;
-      letter-spacing:.2px;
-      font-size:16px;
-      line-height:1.1;
-    }
-    .brandText .sub{
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.2;
-    }
-
-    .controls{
-      display:flex;
-      gap:10px;
       align-items:center;
-      flex-wrap:wrap;
-      justify-content:flex-end;
     }
+    #logo svg{ width:100%; height:auto; display:block; }
+    .brandText{ display:flex; flex-direction:column; gap:2px; }
+    .brandText .title{ font-weight:800; font-size:16px; line-height:1.1; }
+    .brandText .sub{ font-size:12px; color:var(--muted); line-height:1.2; }
 
+    .controls{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
     .pill{
-      display:flex;
-      align-items:center;
-      gap:8px;
+      display:flex; align-items:center; gap:8px;
       border:1px solid var(--border);
       background: rgba(255,255,255,.04);
       padding:8px 10px;
@@ -112,7 +72,6 @@
       color: var(--muted);
       font-size: 12px;
     }
-
     select{
       background: rgba(255,255,255,.06);
       border:1px solid var(--border);
@@ -121,7 +80,6 @@
       border-radius: 12px;
       outline:none;
     }
-
     .btn{
       border:1px solid var(--border);
       background: rgba(255,255,255,.06);
@@ -131,39 +89,21 @@
       cursor:pointer;
       transition: transform .04s ease, background .15s ease, border-color .15s ease;
       user-select:none;
+      white-space:nowrap;
     }
     .btn:hover{ background: rgba(255,255,255,.09); }
     .btn:active{ transform: translateY(1px); }
+    .btn.primary{ background: linear-gradient(180deg, rgba(77,163,255,.25), rgba(77,163,255,.12)); border-color: rgba(77,163,255,.35); }
+    .btn.green{ background: linear-gradient(180deg, rgba(110,231,183,.22), rgba(110,231,183,.10)); border-color: rgba(110,231,183,.32); }
+    .btn.danger{ background: linear-gradient(180deg, rgba(255,107,107,.18), rgba(255,107,107,.10)); border-color: rgba(255,107,107,.35); }
 
-    .btn.primary{
-      background: linear-gradient(180deg, rgba(77,163,255,.25), rgba(77,163,255,.12));
-      border-color: rgba(77,163,255,.35);
-    }
-
-    .btn.green{
-      background: linear-gradient(180deg, rgba(110,231,183,.22), rgba(110,231,183,.10));
-      border-color: rgba(110,231,183,.32);
-    }
-
-    .btn.danger{
-      background: linear-gradient(180deg, rgba(255,107,107,.18), rgba(255,107,107,.10));
-      border-color: rgba(255,107,107,.35);
-    }
-
-    /* Layout */
-    .grid{
-      margin-top:16px;
-      display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap:14px;
-    }
-
+    /* Cards/layout */
+    .grid{ margin-top:14px; display:grid; grid-template-columns: 1.1fr .9fr; gap:14px; }
     @media (max-width: 980px){
       .grid{ grid-template-columns: 1fr; }
       .brand{ min-width: unset; }
       #logo{ width: 200px; }
     }
-
     .card{
       border:1px solid var(--border);
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
@@ -171,7 +111,6 @@
       box-shadow: var(--shadow);
       overflow:hidden;
     }
-
     .cardHeader{
       padding:14px 14px 10px;
       display:flex;
@@ -180,64 +119,39 @@
       gap:10px;
       border-bottom:1px solid rgba(255,255,255,.06);
     }
+    .cardHeader h2{ margin:0; font-size:15px; letter-spacing:.2px; }
+    .cardHeader p{ margin:6px 0 0; font-size:12px; color: var(--muted); line-height: 1.35; }
+    .cardBody{ padding:14px; }
 
-    .cardHeader h2{
-      margin:0;
-      font-size:15px;
-      letter-spacing:.2px;
-    }
-    .cardHeader p{
-      margin:6px 0 0;
-      font-size:12px;
-      color: var(--muted);
-      line-height: 1.35;
-    }
-
-    .cardBody{
-      padding:14px;
+    .tag{
+      font-size:11px;
+      color: rgba(255,255,255,.78);
+      padding:6px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      white-space:nowrap;
+      align-self:flex-start;
     }
 
-    .row{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-
-    .kpi{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      margin-top:10px;
-    }
-
+    /* Dashboard KPIs */
+    .kpi{ display:flex; gap:10px; align-items:stretch; flex-wrap:wrap; }
     .kpiBox{
-      flex:1;
-      min-width: 150px;
+      flex:1; min-width: 160px;
       border:1px solid rgba(255,255,255,.08);
       background: rgba(0,0,0,.18);
       border-radius: 14px;
       padding:12px;
     }
-    .kpiBox .label{
-      font-size:11px;
-      color: var(--muted);
-    }
-    .kpiBox .value{
-      margin-top:6px;
-      font-size:18px;
-      font-weight:800;
-    }
+    .kpiBox .label{ font-size:11px; color: var(--muted); }
+    .kpiBox .value{ margin-top:6px; font-size:20px; font-weight:900; }
 
-    /* Checklist */
-    .checklist{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      margin-top:10px;
-    }
+    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
 
+    .divider{ height:1px; background: rgba(255,255,255,.08); margin:12px 0; }
+
+    /* Checklist items */
+    .checklist{ display:flex; flex-direction:column; gap:10px; }
     .item{
       border:1px solid rgba(255,255,255,.08);
       background: rgba(0,0,0,.18);
@@ -248,49 +162,16 @@
       align-items:flex-start;
       justify-content:space-between;
     }
-
-    .itemLeft{
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
-      min-width:0;
-      flex: 1;
-    }
-
+    .itemLeft{ display:flex; gap:10px; align-items:flex-start; min-width:0; flex:1; }
     .item input[type="checkbox"]{
       margin-top:3px;
-      width:18px;
-      height:18px;
+      width:18px; height:18px;
       accent-color: var(--accent2);
       cursor:pointer;
     }
-
-    .itemText{
-      min-width:0;
-      flex:1;
-    }
-
-    .itemTitle{
-      font-weight:700;
-      font-size:13px;
-      margin:0;
-    }
-    .itemDesc{
-      margin:6px 0 0;
-      color: var(--muted);
-      font-size:12px;
-      line-height: 1.35;
-    }
-
-    .tag{
-      font-size:11px;
-      color: rgba(255,255,255,.78);
-      padding:6px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.05);
-      white-space:nowrap;
-    }
+    .itemText{ min-width:0; flex:1; }
+    .itemTitle{ font-weight:800; font-size:13px; margin:0; }
+    .itemDesc{ margin:6px 0 0; color: var(--muted); font-size:12px; line-height: 1.35; }
 
     textarea{
       width:100%;
@@ -306,17 +187,24 @@
     }
     textarea::placeholder{ color: rgba(159,176,214,.65); }
 
-    .small{
+    .small{ font-size:12px; color: var(--muted); line-height: 1.35; }
+
+    /* Pitch mode */
+    .pitchOnly{ display:none; }
+    body.pitch .pitchOnly{ display:block; }
+    body.pitch .opsOnly{ display:none; }
+    .pitchBanner{
+      border:1px dashed rgba(77,163,255,.55);
+      background: rgba(77,163,255,.12);
+      padding:10px 12px;
+      border-radius: 14px;
+      color: rgba(233,238,252,.95);
       font-size:12px;
-      color: var(--muted);
-      line-height: 1.35;
+      line-height:1.35;
+      margin-bottom: 10px;
     }
 
-    .divider{
-      height:1px;
-      background: rgba(255,255,255,.08);
-      margin:12px 0;
-    }
+    .pageFooter{ margin-top:16px; text-align:center; color: rgba(159,176,214,.75); font-size: 12px; }
 
     .toast{
       position:fixed;
@@ -334,33 +222,7 @@
       pointer-events:none;
       transition: opacity .18s ease, transform .18s ease;
     }
-    .toast.show{
-      opacity:1;
-      transform:translateX(-50%) translateY(-4px);
-    }
-
-    /* Pitch Mode */
-    .pitchOnly{ display:none; }
-    body.pitch .pitchOnly{ display:block; }
-    body.pitch .opsOnly{ display:none; }
-
-    .pitchBanner{
-      border:1px dashed rgba(77,163,255,.55);
-      background: rgba(77,163,255,.12);
-      padding:10px 12px;
-      border-radius: 14px;
-      color: rgba(233,238,252,.95);
-      font-size:12px;
-      line-height:1.35;
-    }
-
-    /* Footer */
-    .pageFooter{
-      margin-top:16px;
-      text-align:center;
-      color: rgba(159,176,214,.75);
-      font-size: 12px;
-    }
+    .toast.show{ opacity:1; transform:translateX(-50%) translateY(-4px); }
   </style>
 </head>
 
@@ -369,11 +231,33 @@
     <!-- TOP BAR -->
     <div class="topbar">
       <div class="brand">
-        <!-- Inline SVG logo as a Data URL (scales cleanly; not tiny) -->
-        <img id="logo" alt="One Stop Systems Logo" />
+        <!-- Inline SVG logo (never broken) -->
+        <div id="logo" aria-label="One Stop Systems Logo">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 380" role="img" aria-label="One Stop Systems">
+            <defs>
+              <linearGradient id="gDash" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#4da3ff"/>
+                <stop offset="1" stop-color="#6ee7b7"/>
+              </linearGradient>
+            </defs>
+            <rect x="0" y="0" width="1200" height="380" rx="56" fill="#0f1a2e"/>
+            <g transform="translate(70,70)">
+              <rect x="0" y="0" width="240" height="240" rx="40" fill="url(#gDash)" opacity="0.95"/>
+              <path d="M70 126c0-36 29-65 65-65h12c36 0 65 29 65 65s-29 65-65 65h-12c-36 0-65-29-65-65z"
+                    fill="#0b1220" opacity="0.95"/>
+              <path d="M112 128l32 32 64-72" fill="none" stroke="#6ee7b7" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+            <g transform="translate(360,108)">
+              <text x="0" y="70" font-size="78" font-weight="800" fill="#e9eefc" font-family="Arial, Helvetica, sans-serif">ONE STOP</text>
+              <text x="0" y="145" font-size="44" font-weight="700" fill="#9fb0d6" font-family="Arial, Helvetica, sans-serif" letter-spacing="1.2">SYSTEMS</text>
+              <text x="0" y="208" font-size="28" font-weight="700" fill="#4da3ff" font-family="Arial, Helvetica, sans-serif">MPI Checklist & Shop Readiness</text>
+            </g>
+          </svg>
+        </div>
+
         <div class="brandText">
           <div class="title">One Stop Systems</div>
-          <div class="sub">MPI-ready checklists • shop readiness • printable reports</div>
+          <div class="sub">Clean dashboard • simple checklist • printable reports</div>
         </div>
       </div>
 
@@ -389,21 +273,21 @@
       </div>
     </div>
 
+    <!-- IMPORTANT: Dashboard Overview is FIRST -->
     <div class="grid">
-      <!-- LEFT: Checklist -->
+      <!-- LEFT: DASHBOARD OVERVIEW -->
       <div class="card">
         <div class="cardHeader">
           <div>
-            <h2>MPI Checklist</h2>
-            <p class="opsOnly">Tick items as you verify them. Notes are saved per shop. Everything persists on your phone.</p>
-            <p class="pitchOnly">Demo view: shows how a shop moves from “not ready” to “ready” with simple guided steps.</p>
+            <h2>Dashboard Overview</h2>
+            <p class="opsOnly">This is the “at a glance” view. Completion, status, last updated, and quick actions.</p>
+            <p class="pitchOnly">Demo view: shows readiness and a clean “what MPI sees” workflow.</p>
           </div>
           <div class="tag" id="statusTag">Loading…</div>
         </div>
-
         <div class="cardBody">
           <div class="pitchOnly pitchBanner">
-            <b>Pitch Mode is ON.</b> This hides internal-only controls and keeps the UI clean for presentations.
+            <b>Pitch Mode is ON.</b> Internal-only controls are hidden for a clean presentation.
           </div>
 
           <div class="kpi">
@@ -423,51 +307,52 @@
 
           <div class="divider"></div>
 
-          <div class="checklist" id="checklist"></div>
+          <div class="row" style="justify-content:space-between;">
+            <div class="small">
+              <b>Quick tip:</b> Tap <b>Print Report</b> to generate a clean report with your logo and copyright.
+            </div>
+            <div class="tag opsOnly">Saved per shop</div>
+          </div>
 
           <div class="divider"></div>
 
-          <div class="row" style="justify-content:space-between;align-items:flex-start;">
-            <div style="flex:1;min-width:260px;">
-              <h2 style="margin:0;font-size:15px;">Shop Notes</h2>
-              <div class="small" style="margin-top:6px;">Use this for deficiencies, photos-to-take, follow-ups, and anything MPI will care about.</div>
-            </div>
-            <div class="tag opsOnly">Saved per shop</div>
+          <div class="row" style="justify-content:flex-end;">
+            <button class="btn" id="btnSaveNotes" type="button">Save Notes</button>
           </div>
 
           <div style="margin-top:10px;">
             <textarea id="notes" placeholder="Example: lift certification expires March 2026; need updated fire extinguisher tag; staff training scheduled…"></textarea>
           </div>
-
-          <div class="row" style="margin-top:10px;justify-content:flex-end;">
-            <button class="btn" id="btnSaveNotes" type="button">Save Notes</button>
-          </div>
         </div>
       </div>
 
-      <!-- RIGHT: Summary / Report -->
+      <!-- RIGHT: REPORT PREVIEW -->
       <div class="card">
         <div class="cardHeader">
           <div>
             <h2>Report Preview</h2>
-            <p>What MPI / management sees when printed. Logo size and print reliability are optimized for mobile.</p>
+            <p>What prints. Built to work on mobile (opens and prints directly from your tap).</p>
           </div>
           <div class="tag">Print-ready</div>
         </div>
         <div class="cardBody">
-          <div class="small">
-            This preview updates automatically based on checklist + notes.
-          </div>
-
+          <div class="small">Preview updates automatically based on checklist + notes.</div>
           <div class="divider"></div>
-
           <div id="preview" class="small" style="line-height:1.5;"></div>
+        </div>
+      </div>
 
-          <div class="divider"></div>
-
-          <div class="small opsOnly">
-            <b>Tip:</b> On Android, printing can fail if pop-ups are blocked. This build opens and prints directly from the button click to avoid that.
+      <!-- FULL WIDTH: CHECKLIST (comes after overview) -->
+      <div class="card" style="grid-column: 1 / -1;">
+        <div class="cardHeader">
+          <div>
+            <h2>MPI Checklist</h2>
+            <p>Tick items as you verify them. Everything persists on your phone for each shop.</p>
           </div>
+          <div class="tag">Checklist</div>
+        </div>
+        <div class="cardBody">
+          <div class="checklist" id="checklist"></div>
         </div>
       </div>
     </div>
@@ -481,48 +366,13 @@
 
   <script>
     /**********************************************************************
-     * ONE STOP SYSTEMS — SINGLE FILE INDEX (Updated)
-     * - Mobile-safe printing (open+write+print inside click handler)
-     * - Waits for logo/images to load before printing
-     * - Bigger logo in app + adjustable logo size in print
-     * - Pitch mode toggle with localStorage persistence
-     * - Per-shop checklist + notes stored in localStorage
+     * One Stop Systems — Single File Index (FIXED + CLEAN)
+     * - Inline SVG logo (never broken)
+     * - Dashboard Overview is the first thing you see
+     * - Mobile-safe printing (open/write/print inside the button click)
+     * - Per-shop checklist + notes saved in localStorage
+     * - Pitch mode toggle (clean presentation)
      **********************************************************************/
-
-    // === LOGO (Generated) ===
-    // This is a clean, scalable SVG logo embedded as a data URL.
-    // You can replace it later with a PNG/JPG URL and it will still print.
-    const logoSvg = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="380" viewBox="0 0 1200 380">
-        <defs>
-          <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#4da3ff"/>
-            <stop offset="1" stop-color="#6ee7b7"/>
-          </linearGradient>
-        </defs>
-        <rect x="0" y="0" width="1200" height="380" rx="56" fill="#0f1a2e"/>
-        <g transform="translate(70,70)">
-          <rect x="0" y="0" width="240" height="240" rx="40" fill="url(#g)" opacity="0.95"/>
-          <path d="M70 126c0-36 29-65 65-65h12c36 0 65 29 65 65s-29 65-65 65h-12c-36 0-65-29-65-65z"
-                fill="#0b1220" opacity="0.95"/>
-          <path d="M112 128l32 32 64-72" fill="none" stroke="#6ee7b7" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
-        </g>
-        <g transform="translate(360,108)">
-          <text x="0" y="70" font-size="78" font-weight="800" fill="#e9eefc" font-family="Arial, Helvetica, sans-serif">
-            ONE STOP
-          </text>
-          <text x="0" y="145" font-size="44" font-weight="700" fill="#9fb0d6" font-family="Arial, Helvetica, sans-serif" letter-spacing="1.2">
-            SYSTEMS
-          </text>
-          <text x="0" y="208" font-size="28" font-weight="600" fill="#4da3ff" font-family="Arial, Helvetica, sans-serif">
-            MPI Checklist & Shop Readiness
-          </text>
-        </g>
-      </svg>
-    `.trim();
-
-    const logoDataUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(logoSvg);
-    document.getElementById("logo").src = logoDataUrl;
 
     // === YEAR ===
     document.getElementById("year").textContent = String(new Date().getFullYear());
@@ -534,50 +384,15 @@
       { key: "shop_c", name: "Pilot Shop C" }
     ];
 
-    // === CHECKLIST TEMPLATE (edit these any time) ===
+    // === CHECKLIST TEMPLATE ===
     const CHECKLIST_TEMPLATE = [
-      {
-        id: "licensing",
-        title: "Business licensing & shop registration",
-        desc: "Confirm shop is properly registered (business number, permits, insurance) and documents are current.",
-        category: "Admin"
-      },
-      {
-        id: "equipment",
-        title: "Equipment inspection & calibration",
-        desc: "Verify hoists/lifts, torque wrenches, scanners, and measuring tools are within inspection/calibration intervals.",
-        category: "Equipment"
-      },
-      {
-        id: "safety",
-        title: "Safety compliance & signage",
-        desc: "First aid, eyewash, fire extinguishers, spill kit, PPE, signage, and emergency exits are compliant and documented.",
-        category: "Safety"
-      },
-      {
-        id: "training",
-        title: "Technician credentials & training log",
-        desc: "Track certifications, training dates, and role assignments so audits are fast and consistent.",
-        category: "People"
-      },
-      {
-        id: "process",
-        title: "Standard inspection workflow in place",
-        desc: "Checklist-based intake, photos, verification steps, and approvals are standardized across staff.",
-        category: "Process"
-      },
-      {
-        id: "data",
-        title: "Secure customer / vehicle data handling",
-        desc: "Access control, secure storage, and privacy practices are documented and consistently followed.",
-        category: "Security"
-      },
-      {
-        id: "documentation",
-        title: "Audit-ready documentation packet",
-        desc: "Ensure required forms, policies, and logs can be exported/printed instantly for review.",
-        category: "Admin"
-      }
+      { id:"licensing", title:"Business licensing & shop registration", desc:"Confirm shop is registered (permits, insurance) and documents are current.", category:"Admin" },
+      { id:"equipment", title:"Equipment inspection & calibration", desc:"Verify hoists/lifts, torque wrenches, scanners and tools are within inspection/calibration intervals.", category:"Equipment" },
+      { id:"safety", title:"Safety compliance & signage", desc:"First aid, eyewash, extinguishers, spill kit, PPE, signage, exits documented and compliant.", category:"Safety" },
+      { id:"training", title:"Technician credentials & training log", desc:"Track certifications, training dates, and role assignments so audits are fast and consistent.", category:"People" },
+      { id:"process", title:"Standard inspection workflow in place", desc:"Checklist-based intake, photos, verification steps and approvals are standardized across staff.", category:"Process" },
+      { id:"data", title:"Secure customer / vehicle data handling", desc:"Access control, secure storage and privacy practices are documented and followed.", category:"Security" },
+      { id:"documentation", title:"Audit-ready documentation packet", desc:"Required forms, policies, and logs can be exported/printed instantly for review.", category:"Admin" }
     ];
 
     // === STATE ===
@@ -590,15 +405,13 @@
       return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
 
-    function shopStorageKey(shopKey){
-      return `oneStopShopState:${shopKey}`;
-    }
+    function shopStorageKey(shopKey){ return `oneStopShopState:${shopKey}`; }
 
     function defaultShopState(){
       return {
         updatedAt: null,
         notes: "",
-        checks: CHECKLIST_TEMPLATE.reduce((acc, item) => { acc[item.id] = false; return acc; }, {})
+        checks: CHECKLIST_TEMPLATE.reduce((acc, item)=>{ acc[item.id]=false; return acc; }, {})
       };
     }
 
@@ -607,7 +420,6 @@
       if (!raw) return defaultShopState();
       try{
         const parsed = JSON.parse(raw);
-        // ensure any new items exist
         const base = defaultShopState();
         return {
           updatedAt: parsed.updatedAt || base.updatedAt,
@@ -630,7 +442,7 @@
       setTimeout(()=> t.classList.remove("show"), 1200);
     }
 
-    // === UI POPULATION ===
+    // === SHOP SELECT ===
     const shopSelect = document.getElementById("shopSelect");
     SHOPS.forEach(s=>{
       const opt = document.createElement("option");
@@ -661,7 +473,7 @@
           next.checks[item.id] = cb.checked;
           next.updatedAt = nowStamp();
           saveShopState(selectedShopKey, next);
-          updateAll();
+          updateAll(false);
         });
 
         const text = document.createElement("div");
@@ -691,7 +503,6 @@
         host.appendChild(row);
       });
 
-      // notes
       document.getElementById("notes").value = state.notes || "";
     }
 
@@ -700,8 +511,7 @@
       const state = loadShopState(selectedShopKey);
       const total = CHECKLIST_TEMPLATE.length;
       let done = 0;
-      CHECKLIST_TEMPLATE.forEach(i=>{ if (state.checks[i.id]) done++; });
-
+      for (const i of CHECKLIST_TEMPLATE) if (state.checks[i.id]) done++;
       const pct = total ? Math.round((done/total)*100) : 0;
 
       document.getElementById("kpiCompletion").textContent = pct + "%";
@@ -724,7 +534,7 @@
       }
     }
 
-    // === REPORT HTML BUILDER (used by preview and print) ===
+    // === REPORT HTML BUILDER (used for preview and print) ===
     function escapeHtml(str){
       return String(str || "")
         .replaceAll("&","&amp;")
@@ -740,7 +550,7 @@
 
       const total = CHECKLIST_TEMPLATE.length;
       let done = 0;
-      CHECKLIST_TEMPLATE.forEach(i=>{ if (state.checks[i.id]) done++; });
+      for (const i of CHECKLIST_TEMPLATE) if (state.checks[i.id]) done++;
       const pct = total ? Math.round((done/total)*100) : 0;
 
       const rows = CHECKLIST_TEMPLATE.map(i=>{
@@ -765,7 +575,7 @@
         <div style="font-family:Arial,sans-serif;color:#111;">
           <div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start;">
             <div>
-              <div style="font-size:18px;font-weight:800;">Shop Readiness Report</div>
+              <div style="font-size:18px;font-weight:900;">Shop Readiness Report</div>
               <div style="margin-top:6px;color:#374151;font-size:13px;">
                 <b>Shop:</b> ${escapeHtml(shopName)}<br>
                 <b>Completion:</b> ${pct}% (${done}/${total})<br>
@@ -792,7 +602,7 @@
           </div>
 
           <div style="margin-top:14px;">
-            <div style="font-weight:800;margin-bottom:6px;">Notes</div>
+            <div style="font-weight:900;margin-bottom:6px;">Notes</div>
             <div style="border:1px solid #e5e7eb;border-radius:10px;padding:10px;min-height:60px;color:#111;">
               ${notes || '<span style="color:#6b7280;">No notes entered.</span>'}
             </div>
@@ -802,8 +612,7 @@
     }
 
     function updatePreview(){
-      const html = buildReportHTML();
-      document.getElementById("preview").innerHTML = html;
+      document.getElementById("preview").innerHTML = buildReportHTML();
     }
 
     function applyPitchMode(){
@@ -811,27 +620,28 @@
       document.getElementById("btnPitch").textContent = pitchMode ? "Exit Pitch Mode" : "Pitch Mode";
     }
 
-    function updateAll(){
+    function updateAll(showToast){
       renderChecklist();
       updateKpis();
       updatePreview();
+      if (showToast) toast("Updated");
     }
 
-    // === NOTES SAVE ===
+    // === SAVE NOTES ===
     document.getElementById("btnSaveNotes").addEventListener("click", ()=>{
       const state = loadShopState(selectedShopKey);
       state.notes = document.getElementById("notes").value || "";
       state.updatedAt = nowStamp();
       saveShopState(selectedShopKey, state);
       toast("Notes saved");
-      updateAll();
+      updateAll(false);
     });
 
     // === SHOP CHANGE ===
     shopSelect.addEventListener("change", ()=>{
       selectedShopKey = shopSelect.value;
       localStorage.setItem("selectedShopKey", selectedShopKey);
-      updateAll();
+      updateAll(false);
       toast("Shop loaded");
     });
 
@@ -841,7 +651,7 @@
       cleared.updatedAt = nowStamp();
       saveShopState(selectedShopKey, cleared);
       toast("Shop reset");
-      updateAll();
+      updateAll(false);
     });
 
     // === PITCH TOGGLE ===
@@ -852,9 +662,35 @@
       toast(pitchMode ? "Pitch mode on" : "Pitch mode off");
     });
 
-    // === MOBILE-SAFE PRINT ===
-    function openPrintWindow({ title = "One Stop Report", contentHTML = "", logoDataUrl = null }) {
-      // MUST happen directly inside click handler
+    // === PRINT (mobile safe) ===
+    function logoSvgForPrint(){
+      // separate gradient id so it won't clash with the page
+      return `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 380" role="img" aria-label="One Stop Systems">
+          <defs>
+            <linearGradient id="gPrint" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#4da3ff"/>
+              <stop offset="1" stop-color="#6ee7b7"/>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="1200" height="380" rx="56" fill="#0f1a2e"/>
+          <g transform="translate(70,70)">
+            <rect x="0" y="0" width="240" height="240" rx="40" fill="url(#gPrint)" opacity="0.95"/>
+            <path d="M70 126c0-36 29-65 65-65h12c36 0 65 29 65 65s-29 65-65 65h-12c-36 0-65-29-65-65z"
+                  fill="#0b1220" opacity="0.95"/>
+            <path d="M112 128l32 32 64-72" fill="none" stroke="#6ee7b7" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+          <g transform="translate(360,108)">
+            <text x="0" y="70" font-size="78" font-weight="800" fill="#e9eefc" font-family="Arial, Helvetica, sans-serif">ONE STOP</text>
+            <text x="0" y="145" font-size="44" font-weight="700" fill="#9fb0d6" font-family="Arial, Helvetica, sans-serif" letter-spacing="1.2">SYSTEMS</text>
+            <text x="0" y="208" font-size="28" font-weight="700" fill="#4da3ff" font-family="Arial, Helvetica, sans-serif">MPI Checklist & Shop Readiness</text>
+          </g>
+        </svg>
+      `;
+    }
+
+    function openPrintWindow({ title, contentHTML }) {
+      // MUST be inside the click handler
       const w = window.open("", "_blank", "noopener,noreferrer");
       if (!w) {
         alert("Pop-up blocked. Please allow pop-ups to print.");
@@ -862,9 +698,7 @@
       }
 
       const year = new Date().getFullYear();
-
-      // PRINT LOGO SIZE (adjust here)
-      const LOGO_WIDTH_PX = 280; // try 320 if you want it larger
+      const LOGO_WIDTH_PX = 300; // print logo size (change to 340/380 if you want bigger)
 
       const html = `
 <!doctype html>
@@ -877,12 +711,12 @@
     :root { --logoWidth: ${LOGO_WIDTH_PX}px; }
     body { font-family: Arial, sans-serif; margin: 24px; color: #111; }
     .header { display:flex; align-items:center; gap:16px; margin-bottom: 16px; }
-    .logo { width: var(--logoWidth); height:auto; display:block; object-fit:contain; }
-    .brand { font-size: 18px; font-weight: 800; }
+    .logoWrap { width: var(--logoWidth); }
+    .logoWrap svg { width:100%; height:auto; display:block; }
+    .brand { font-size: 18px; font-weight: 900; }
     .sub { font-size: 12px; color: #6b7280; margin-top: 2px; }
     .report { margin-top: 10px; }
     .footer { margin-top: 24px; font-size: 12px; color: #6b7280; }
-
     @media print {
       body { margin: 12mm; }
       .footer { position: fixed; bottom: 8mm; left: 12mm; right: 12mm; }
@@ -891,7 +725,7 @@
 </head>
 <body>
   <div class="header">
-    ${logoDataUrl ? `<img class="logo" src="${logoDataUrl}" alt="One Stop Logo" />` : ""}
+    <div class="logoWrap">${logoSvgForPrint()}</div>
     <div>
       <div class="brand">One Stop Systems</div>
       <div class="sub">MPI Checklist & Shop Readiness</div>
@@ -903,23 +737,8 @@
   <div class="footer">© ${year} One Stop Systems. All rights reserved.</div>
 
   <script>
-    (function(){
-      const imgs = Array.from(document.images || []);
-      const done = () => { window.focus(); window.print(); };
-
-      if (!imgs.length) return done();
-
-      let remaining = imgs.length;
-      const tick = () => { remaining--; if (remaining <= 0) done(); };
-
-      imgs.forEach(img => {
-        if (img.complete) return tick();
-        img.onload = tick;
-        img.onerror = tick;
-      });
-
-      setTimeout(done, 1200);
-    })();
+    // Inline SVG loads instantly; still keep a tiny delay for mobile stability
+    setTimeout(function(){ window.focus(); window.print(); }, 50);
   <\/script>
 </body>
 </html>
@@ -932,16 +751,12 @@
 
     document.getElementById("btnPrint").addEventListener("click", ()=>{
       const contentHTML = buildReportHTML();
-      openPrintWindow({
-        title: "One Stop Systems Report",
-        contentHTML,
-        logoDataUrl: logoDataUrl
-      });
+      openPrintWindow({ title: "One Stop Systems Report", contentHTML });
     });
 
     // === INIT ===
     applyPitchMode();
-    updateAll();
+    updateAll(false);
   </script>
 </body>
 </html>
