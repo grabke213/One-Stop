@@ -1,737 +1,447 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>One Stop Systems — Dashboard</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>One Stop Compliance – RepairScope Platform (Confidential Pilot)</title>
 
-  <style>
-    :root{
-      --bg:#0b1220;
-      --text:#e9eefc;
-      --muted:#9fb0d6;
-      --accent:#4da3ff;
-      --accent2:#6ee7b7;
-      --danger:#ff6b6b;
-      --border:rgba(255,255,255,.10);
-      --shadow:0 10px 30px rgba(0,0,0,.30);
-      --radius:16px;
-    }
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background:
-        radial-gradient(1200px 700px at 20% 0%, rgba(77,163,255,.18), transparent 60%),
-        radial-gradient(900px 600px at 90% 30%, rgba(110,231,183,.10), transparent 60%),
-        var(--bg);
-      color:var(--text);
-    }
-    button, input, select, textarea{ font:inherit; }
-
-    .wrap{ max-width:1100px; margin:0 auto; padding:16px 14px 70px; }
-
-    /* Top bar */
-    .topbar{
-      display:flex; gap:12px; align-items:center; justify-content:space-between;
-      padding:14px;
-      border:1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border-radius: calc(var(--radius) + 6px);
-      box-shadow: var(--shadow);
-      position: sticky;
-      top: 10px;
-      z-index: 20;
-      backdrop-filter: blur(10px);
-    }
-    .brand{ display:flex; align-items:center; gap:12px; min-width: 260px; }
-
-    /* Logo */
-    #logo{
-      width: 300px;          /* dashboard logo size */
-      height:auto;
-      display:block;
-      object-fit:contain;
-      border-radius: 12px;
-      border:1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.04);
-      padding:10px;
-    }
-
-    .brandText{ display:flex; flex-direction:column; gap:2px; }
-    .brandText .title{ font-weight:900; font-size:16px; line-height:1.1; }
-    .brandText .sub{ font-size:12px; color:var(--muted); line-height:1.2; }
-
-    .controls{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
-    .pill{
-      display:flex; align-items:center; gap:8px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.04);
-      padding:8px 10px;
-      border-radius: 999px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    select{
-      background: rgba(255,255,255,.06);
-      border:1px solid var(--border);
-      color:var(--text);
-      padding:8px 10px;
-      border-radius: 12px;
-      outline:none;
-    }
-    .btn{
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      padding:10px 12px;
-      border-radius: 12px;
-      cursor:pointer;
-      transition: transform .04s ease, background .15s ease, border-color .15s ease;
-      user-select:none;
-      white-space:nowrap;
-    }
-    .btn:hover{ background: rgba(255,255,255,.09); }
-    .btn:active{ transform: translateY(1px); }
-    .btn.primary{ background: linear-gradient(180deg, rgba(77,163,255,.25), rgba(77,163,255,.12)); border-color: rgba(77,163,255,.35); }
-    .btn.green{ background: linear-gradient(180deg, rgba(110,231,183,.22), rgba(110,231,183,.10)); border-color: rgba(110,231,183,.32); }
-    .btn.danger{ background: linear-gradient(180deg, rgba(255,107,107,.18), rgba(255,107,107,.10)); border-color: rgba(255,107,107,.35); }
-
-    /* Layout */
-    .grid{ margin-top:14px; display:grid; grid-template-columns: 1.1fr .9fr; gap:14px; }
-    @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
-      .brand{ min-width: unset; }
-      #logo{ width: 260px; }
-    }
-
-    .card{
-      border:1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .cardHeader{
-      padding:14px 14px 10px;
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-      border-bottom:1px solid rgba(255,255,255,.06);
-    }
-    .cardHeader h2{ margin:0; font-size:15px; letter-spacing:.2px; }
-    .cardHeader p{ margin:6px 0 0; font-size:12px; color: var(--muted); line-height: 1.35; }
-    .cardBody{ padding:14px; }
-
-    .tag{
-      font-size:11px;
-      color: rgba(255,255,255,.78);
-      padding:6px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.05);
-      white-space:nowrap;
-      align-self:flex-start;
-    }
-
-    /* Dashboard KPIs */
-    .kpi{ display:flex; gap:10px; align-items:stretch; flex-wrap:wrap; }
-    .kpiBox{
-      flex:1; min-width: 160px;
-      border:1px solid rgba(255,255,255,.08);
-      background: rgba(0,0,0,.18);
-      border-radius: 14px;
-      padding:12px;
-    }
-    .kpiBox .label{ font-size:11px; color: var(--muted); }
-    .kpiBox .value{ margin-top:6px; font-size:20px; font-weight:900; }
-
-    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:space-between; }
-    .divider{ height:1px; background: rgba(255,255,255,.08); margin:12px 0; }
-
-    /* Checklist items */
-    .checklist{ display:flex; flex-direction:column; gap:10px; }
-    .item{
-      border:1px solid rgba(255,255,255,.08);
-      background: rgba(0,0,0,.18);
-      border-radius: 14px;
-      padding:12px;
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
-      justify-content:space-between;
-    }
-    .itemLeft{ display:flex; gap:10px; align-items:flex-start; min-width:0; flex:1; }
-    .item input[type="checkbox"]{
-      margin-top:3px;
-      width:18px; height:18px;
-      accent-color: var(--accent2);
-      cursor:pointer;
-    }
-    .itemText{ min-width:0; flex:1; }
-    .itemTitle{ font-weight:900; font-size:13px; margin:0; }
-    .itemDesc{ margin:6px 0 0; color: var(--muted); font-size:12px; line-height: 1.35; }
-
-    textarea{
-      width:100%;
-      min-height:120px;
-      resize: vertical;
-      padding:12px;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      color: var(--text);
-      outline:none;
-      line-height: 1.4;
-    }
-    textarea::placeholder{ color: rgba(159,176,214,.65); }
-
-    .small{ font-size:12px; color: var(--muted); line-height: 1.35; }
-
-    /* Pitch mode */
-    .pitchOnly{ display:none; }
-    body.pitch .pitchOnly{ display:block; }
-    body.pitch .opsOnly{ display:none; }
-    .pitchBanner{
-      border:1px dashed rgba(77,163,255,.55);
-      background: rgba(77,163,255,.12);
-      padding:10px 12px;
-      border-radius: 14px;
-      color: rgba(233,238,252,.95);
-      font-size:12px;
-      line-height:1.35;
-      margin-bottom: 10px;
-    }
-
-    .pageFooter{ margin-top:16px; text-align:center; color: rgba(159,176,214,.75); font-size: 12px; }
-
-    .toast{
-      position:fixed;
-      left:50%;
-      transform:translateX(-50%);
-      bottom:14px;
-      z-index: 50;
-      background: rgba(0,0,0,.75);
-      border:1px solid rgba(255,255,255,.14);
-      color:#fff;
-      padding:10px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      opacity:0;
-      pointer-events:none;
-      transition: opacity .18s ease, transform .18s ease;
-    }
-    .toast.show{ opacity:1; transform:translateX(-50%) translateY(-4px); }
-
-    /* Small help message for mobile printing */
-    .printHelp{
-      margin-top:10px;
-      font-size:12px;
-      color: rgba(159,176,214,.85);
-      line-height:1.35;
-    }
-  </style>
-</head>
-
-<body>
-  <div class="wrap">
-    <!-- TOP BAR -->
-    <div class="topbar">
-      <div class="brand">
-        <!-- Your uploaded copyrighted logo file -->
-        <img id="logo" src="./Onestop7.png" alt="One Stop Systems Logo" />
-
-        <div class="brandText">
-          <div class="title">One Stop Systems</div>
-          <div class="sub">Dashboard first • Checklist • Print-ready reports</div>
-        </div>
-      </div>
-
-      <div class="controls">
-        <div class="pill">
-          <span>Shop</span>
-          <select id="shopSelect"></select>
-        </div>
-        <button class="btn green" id="btnPitch" type="button">Pitch Mode</button>
-        <button class="btn primary" id="btnPrint" type="button">Print Report</button>
-        <button class="btn danger opsOnly" id="btnReset" type="button">Reset Shop</button>
-      </div>
-    </div>
-
-    <!-- DASHBOARD OVERVIEW FIRST -->
-    <div class="grid">
-      <div class="card">
-        <div class="cardHeader">
-          <div>
-            <h2>Dashboard Overview</h2>
-            <p class="opsOnly">Completion, status, last updated, and notes — saved per shop.</p>
-            <p class="pitchOnly">Clean demo mode for presentations.</p>
-          </div>
-          <div class="tag" id="statusTag">Loading…</div>
-        </div>
-        <div class="cardBody">
-          <div class="pitchOnly pitchBanner">
-            <b>Pitch Mode is ON.</b> Internal-only controls are hidden for a clean presentation.
-          </div>
-
-          <div class="kpi">
-            <div class="kpiBox">
-              <div class="label">Completion</div>
-              <div class="value" id="kpiCompletion">0%</div>
-            </div>
-            <div class="kpiBox">
-              <div class="label">Items Completed</div>
-              <div class="value" id="kpiDone">0 / 0</div>
-            </div>
-            <div class="kpiBox">
-              <div class="label">Last Updated</div>
-              <div class="value" id="kpiUpdated">—</div>
-            </div>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="row">
-            <div class="small">
-              <b>Quick tip:</b> Tap <b>Print Report</b>. If your phone blocks pop-ups, allow pop-ups for this site.
-            </div>
-            <div class="tag opsOnly">Saved per shop</div>
-          </div>
-
-          <div class="printHelp">
-            If print doesn’t open: try Chrome → <b>⋮</b> → <b>Settings</b> → <b>Site settings</b> → <b>Pop-ups and redirects</b> → Allow for this site.
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="row" style="justify-content:flex-end;">
-            <button class="btn" id="btnSaveNotes" type="button">Save Notes</button>
-          </div>
-
-          <div style="margin-top:10px;">
-            <textarea id="notes" placeholder="Example: lift certification expires March 2026; need updated fire extinguisher tag; staff training scheduled…"></textarea>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="cardHeader">
-          <div>
-            <h2>Report Preview</h2>
-            <p>What prints. Built to work on mobile (opens + prints directly from your tap).</p>
-          </div>
-          <div class="tag">Print-ready</div>
-        </div>
-        <div class="cardBody">
-          <div class="small">Preview updates automatically based on checklist + notes.</div>
-          <div class="divider"></div>
-          <div id="preview" class="small" style="line-height:1.5;"></div>
-        </div>
-      </div>
-
-      <div class="card" style="grid-column: 1 / -1;">
-        <div class="cardHeader">
-          <div>
-            <h2>MPI Checklist</h2>
-            <p>Tick items as you verify them. Everything persists on your phone for each shop.</p>
-          </div>
-          <div class="tag">Checklist</div>
-        </div>
-        <div class="cardBody">
-          <div class="checklist" id="checklist"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="pageFooter">
-      © <span id="year"></span> One Stop Systems. All rights reserved.
-    </div>
-  </div>
-
-  <div class="toast" id="toast">Saved</div>
-
-  <script>
-    /**********************************************************************
-     * One Stop Systems — GitHub Pages Safe Single-File App
-     * - Uses your uploaded logo: ./Onestop7.png
-     * - Dashboard overview first
-     * - Mobile-safe print with popup + fallback
-     * - Per-shop checklist + notes stored in localStorage
-     **********************************************************************/
-
-    // YEAR
-    document.getElementById("year").textContent = String(new Date().getFullYear());
-
-    // SHOPS
-    const SHOPS = [
-      { key: "shop_a", name: "Pilot Shop A" },
-      { key: "shop_b", name: "Pilot Shop B" },
-      { key: "shop_c", name: "Pilot Shop C" }
-    ];
-
-    // CHECKLIST
-    const CHECKLIST_TEMPLATE = [
-      { id:"licensing", title:"Business licensing & shop registration", desc:"Confirm shop is registered (permits, insurance) and documents are current.", category:"Admin" },
-      { id:"equipment", title:"Equipment inspection & calibration", desc:"Verify hoists/lifts, torque wrenches, scanners and tools are within inspection/calibration intervals.", category:"Equipment" },
-      { id:"safety", title:"Safety compliance & signage", desc:"First aid, eyewash, extinguishers, spill kit, PPE, signage, exits documented and compliant.", category:"Safety" },
-      { id:"training", title:"Technician credentials & training log", desc:"Track certifications, training dates, and role assignments so audits are fast and consistent.", category:"People" },
-      { id:"process", title:"Standard inspection workflow in place", desc:"Checklist-based intake, photos, verification steps and approvals are standardized across staff.", category:"Process" },
-      { id:"data", title:"Secure customer / vehicle data handling", desc:"Access control, secure storage and privacy practices are documented and followed.", category:"Security" },
-      { id:"documentation", title:"Audit-ready documentation packet", desc:"Required forms, policies, and logs can be exported/printed instantly for review.", category:"Admin" }
-    ];
-
-    let selectedShopKey = localStorage.getItem("selectedShopKey") || SHOPS[0].key;
-    let pitchMode = localStorage.getItem("pitchMode") === "1";
-
-    function nowStamp(){
-      const d = new Date();
-      const pad = (n)=> String(n).padStart(2,"0");
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-    }
-    function shopStorageKey(shopKey){ return `oneStopShopState:${shopKey}`; }
-
-    function defaultShopState(){
-      return {
-        updatedAt: null,
-        notes: "",
-        checks: CHECKLIST_TEMPLATE.reduce((acc, item)=>{ acc[item.id]=false; return acc; }, {})
-      };
-    }
-
-    function loadShopState(shopKey){
-      const raw = localStorage.getItem(shopStorageKey(shopKey));
-      if (!raw) return defaultShopState();
-      try{
-        const parsed = JSON.parse(raw);
-        const base = defaultShopState();
-        return {
-          updatedAt: parsed.updatedAt || base.updatedAt,
-          notes: typeof parsed.notes === "string" ? parsed.notes : base.notes,
-          checks: { ...base.checks, ...(parsed.checks || {}) }
-        };
-      }catch{
-        return defaultShopState();
-      }
-    }
-
-    function saveShopState(shopKey, state){
-      localStorage.setItem(shopStorageKey(shopKey), JSON.stringify(state));
-    }
-
-    function toast(msg){
-      const t = document.getElementById("toast");
-      t.textContent = msg;
-      t.classList.add("show");
-      setTimeout(()=> t.classList.remove("show"), 1200);
-    }
-
-    // SHOP SELECT
-    const shopSelect = document.getElementById("shopSelect");
-    for (const s of SHOPS){
-      const opt = document.createElement("option");
-      opt.value = s.key;
-      opt.textContent = s.name;
-      shopSelect.appendChild(opt);
-    }
-    shopSelect.value = selectedShopKey;
-
-    function renderChecklist(){
-      const state = loadShopState(selectedShopKey);
-      const host = document.getElementById("checklist");
-      host.innerHTML = "";
-
-      for (const item of CHECKLIST_TEMPLATE){
-        const row = document.createElement("div");
-        row.className = "item";
-
-        const left = document.createElement("div");
-        left.className = "itemLeft";
-
-        const cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.checked = !!state.checks[item.id];
-        cb.addEventListener("change", ()=>{
-          const next = loadShopState(selectedShopKey);
-          next.checks[item.id] = cb.checked;
-          next.updatedAt = nowStamp();
-          saveShopState(selectedShopKey, next);
-          updateAll();
-        });
-
-        const text = document.createElement("div");
-        text.className = "itemText";
-
-        const title = document.createElement("p");
-        title.className = "itemTitle";
-        title.textContent = item.title;
-
-        const desc = document.createElement("p");
-        desc.className = "itemDesc";
-        desc.textContent = item.desc;
-
-        text.appendChild(title);
-        text.appendChild(desc);
-
-        left.appendChild(cb);
-        left.appendChild(text);
-
-        const tag = document.createElement("div");
-        tag.className = "tag";
-        tag.textContent = item.category;
-
-        row.appendChild(left);
-        row.appendChild(tag);
-
-        host.appendChild(row);
+    <style>
+      :root {
+        --bg: #fafafa;
+        --card: #ffffff;
+        --text: #111111;
+        --muted: #666666;
+        --border: #e6e6e6;
+        --shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+        --pill: #f2f2f2;
       }
 
-      document.getElementById("notes").value = state.notes || "";
-    }
-
-    function updateKpis(){
-      const state = loadShopState(selectedShopKey);
-      const total = CHECKLIST_TEMPLATE.length;
-      let done = 0;
-      for (const i of CHECKLIST_TEMPLATE) if (state.checks[i.id]) done++;
-      const pct = total ? Math.round((done/total)*100) : 0;
-
-      document.getElementById("kpiCompletion").textContent = pct + "%";
-      document.getElementById("kpiDone").textContent = `${done} / ${total}`;
-      document.getElementById("kpiUpdated").textContent = state.updatedAt || "—";
-
-      const statusTag = document.getElementById("statusTag");
-      if (pct === 100){
-        statusTag.textContent = "Ready";
-        statusTag.style.borderColor = "rgba(110,231,183,.45)";
-        statusTag.style.background = "rgba(110,231,183,.12)";
-      } else if (pct >= 60){
-        statusTag.textContent = "In Progress";
-        statusTag.style.borderColor = "rgba(77,163,255,.45)";
-        statusTag.style.background = "rgba(77,163,255,.12)";
-      } else {
-        statusTag.textContent = "Not Ready";
-        statusTag.style.borderColor = "rgba(255,255,255,.12)";
-        statusTag.style.background = "rgba(255,255,255,.05)";
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
       }
-    }
 
-    function escapeHtml(str){
-      return String(str || "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 16px;
+        padding-bottom: 88px; /* room for bottom nav */
+      }
 
-    function buildReportHTML(){
-      const state = loadShopState(selectedShopKey);
-      const shopName = (SHOPS.find(s=>s.key===selectedShopKey) || SHOPS[0]).name;
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: var(--card);
+        box-shadow: var(--shadow);
+      }
 
-      const total = CHECKLIST_TEMPLATE.length;
-      let done = 0;
-      for (const i of CHECKLIST_TEMPLATE) if (state.checks[i.id]) done++;
-      const pct = total ? Math.round((done/total)*100) : 0;
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
 
-      const rows = CHECKLIST_TEMPLATE.map(i=>{
-        const ok = !!state.checks[i.id];
-        return `
-          <tr>
-            <td style="padding:10px;border-bottom:1px solid #e5e7eb;">${escapeHtml(i.category)}</td>
-            <td style="padding:10px;border-bottom:1px solid #e5e7eb;">
-              <b>${escapeHtml(i.title)}</b><br>
-              <span style="color:#4b5563;">${escapeHtml(i.desc)}</span>
-            </td>
-            <td style="padding:10px;border-bottom:1px solid #e5e7eb;text-align:center;">
-              ${ok ? "✅" : "—"}
-            </td>
-          </tr>
-        `;
-      }).join("");
+      .brand img {
+        height: 56px;
+        width: auto;
+        object-fit: contain;
+        display: block;
+      }
 
-      const notes = escapeHtml(state.notes || "").replaceAll("\n","<br>");
+      .brand-text { min-width: 0; }
+      .confidential {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .title {
+        font-size: 22px;
+        font-weight: 800;
+        line-height: 1.1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 520px;
+      }
+      .subtitle {
+        font-size: 14px;
+        color: var(--muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 520px;
+      }
 
-      return `
-        <div style="font-family:Arial,sans-serif;color:#111;">
-          <div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start;">
+      .pill {
+        font-size: 12px;
+        font-weight: 800;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--pill);
+        white-space: nowrap;
+      }
+
+      .grid {
+        display: grid;
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .grid.kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      @media (min-width: 720px) {
+        .grid.kpis {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+      }
+
+      .card {
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: var(--card);
+        box-shadow: var(--shadow);
+        padding: 14px;
+      }
+
+      .kpi-label {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .kpi-value {
+        font-size: 26px;
+        font-weight: 900;
+        margin-top: 2px;
+      }
+
+      .section-title {
+        font-size: 14px;
+        font-weight: 800;
+        margin: 0 0 10px 0;
+      }
+
+      .claim {
+        width: 100%;
+        text-align: left;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 12px;
+        background: #fff;
+      }
+      .claim:active { transform: scale(0.99); }
+      .claim-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .claim-id {
+        font-weight: 800;
+      }
+      .claim-muted {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .claim-next {
+        font-size: 13px;
+        margin-top: 8px;
+        color: #222;
+      }
+
+      .status {
+        font-size: 11px;
+        font-weight: 800;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 6px 10px;
+        background: var(--pill);
+        white-space: nowrap;
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .btn {
+        border: 0;
+        border-radius: 16px;
+        padding: 12px 14px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .btn-primary {
+        background: #111;
+        color: #fff;
+      }
+      .btn-outline {
+        background: #fff;
+        border: 1px solid var(--border);
+        color: #111;
+      }
+
+      .hidden { display: none !important; }
+
+      /* Bottom nav (mobile friendly) */
+      .bottom-nav {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #fff;
+        border-top: 1px solid var(--border);
+        padding: 8px;
+      }
+      .bottom-nav-inner {
+        max-width: 900px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+      }
+      .nav-btn {
+        border: 0;
+        border-radius: 16px;
+        padding: 10px 8px;
+        background: #fff;
+        border: 1px solid transparent;
+        font-weight: 800;
+        font-size: 12px;
+        color: #222;
+      }
+      .nav-btn.active {
+        background: #111;
+        color: #fff;
+      }
+
+      footer {
+        margin-top: 18px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+        font-size: 12px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .tiny {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- HEADER / BRAND -->
+      <div class="topbar">
+        <div class="brand">
+          <!-- ✅ YOUR LOGO: make sure Onestop7.png is in the SAME folder as index.html -->
+          <img
+            src="Onestop7.png"
+            alt="One Stop Compliance – RepairScope Platform"
+            onerror="document.getElementById('logoFallback').classList.remove('hidden'); this.classList.add('hidden');"
+          />
+          <div id="logoFallback" class="hidden" style="font-weight:900; font-size:18px;">
+            One Stop Compliance
+          </div>
+
+          <div class="brand-text">
+            <div class="confidential">Confidential Pilot</div>
+            <div class="title">One Stop Compliance</div>
+            <div class="subtitle">RepairScope Platform</div>
+          </div>
+        </div>
+
+        <div class="pill">MPI</div>
+      </div>
+
+      <!-- KPI CARDS -->
+      <div class="grid kpis">
+        <div class="card">
+          <div class="kpi-label">Open claims</div>
+          <div class="kpi-value" id="kpiTotal">3</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label">Needs action</div>
+          <div class="kpi-value" id="kpiNeeds">3</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label">Waiting MPI</div>
+          <div class="kpi-value" id="kpiMpi">1</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label">Waiting parts</div>
+          <div class="kpi-value" id="kpiParts">1</div>
+        </div>
+      </div>
+
+      <!-- DASHBOARD LIST -->
+      <div class="card" id="dashboardCard">
+        <h3 class="section-title">Top priority claims</h3>
+
+        <button class="claim" onclick="openClaims()">
+          <div class="claim-row">
             <div>
-              <div style="font-size:18px;font-weight:900;">Shop Readiness Report</div>
-              <div style="margin-top:6px;color:#374151;font-size:13px;">
-                <b>Shop:</b> ${escapeHtml(shopName)}<br>
-                <b>Completion:</b> ${pct}% (${done}/${total})<br>
-                <b>Last Updated:</b> ${escapeHtml(state.updatedAt || "—")}
-              </div>
+              <div class="claim-id">MPI-1023481</div>
+              <div class="claim-muted">2022 Ford F-150 • RO-7712</div>
+              <div class="claim-muted">Last activity: <span id="t1"></span></div>
             </div>
-            <div style="text-align:right;color:#374151;font-size:12px;">
-              <div><b>One Stop Systems</b></div>
-              <div>MPI Checklist & Compliance</div>
-            </div>
+            <div class="status">Waiting Approval</div>
           </div>
+          <div class="claim-next"><b>Next:</b> Enter MPI verbal auth code + proof; Admin approve OEM delta</div>
+        </button>
 
-          <div style="margin-top:14px;">
-            <table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">
-              <thead>
-                <tr style="background:#f3f4f6;">
-                  <th style="text-align:left;padding:10px;border-bottom:1px solid #e5e7eb;">Category</th>
-                  <th style="text-align:left;padding:10px;border-bottom:1px solid #e5e7eb;">Requirement</th>
-                  <th style="text-align:center;padding:10px;border-bottom:1px solid #e5e7eb;">Status</th>
-                </tr>
-              </thead>
-              <tbody>${rows}</tbody>
-            </table>
-          </div>
+        <div style="height:10px"></div>
 
-          <div style="margin-top:14px;">
-            <div style="font-weight:900;margin-bottom:6px;">Notes</div>
-            <div style="border:1px solid #e5e7eb;border-radius:10px;padding:10px;min-height:60px;color:#111;">
-              ${notes || '<span style="color:#6b7280;">No notes entered.</span>'}
+        <button class="claim" onclick="openClaims()">
+          <div class="claim-row">
+            <div>
+              <div class="claim-id">MPI-1023559</div>
+              <div class="claim-muted">2019 Honda CR-V • RO-7720</div>
+              <div class="claim-muted">Last activity: <span id="t2"></span></div>
             </div>
+            <div class="status">Waiting Parts</div>
           </div>
+          <div class="claim-next"><b>Next:</b> Get ETA update; notify customer</div>
+        </button>
+
+        <div style="height:10px"></div>
+
+        <button class="claim" onclick="openClaims()">
+          <div class="claim-row">
+            <div>
+              <div class="claim-id">MPI-1023602</div>
+              <div class="claim-muted">2021 Toyota RAV4 • RO-7731</div>
+              <div class="claim-muted">Last activity: <span id="t3"></span></div>
+            </div>
+            <div class="status">Planning</div>
+          </div>
+          <div class="claim-next"><b>Next:</b> Issue materials from stock or order seam sealer</div>
+        </button>
+
+        <div class="tiny">
+          Production intent: encrypted data + role-based access + full audit logging (every action time/date stamped).
         </div>
-      `;
-    }
+      </div>
 
-    function updatePreview(){
-      document.getElementById("preview").innerHTML = buildReportHTML();
-    }
+      <!-- CLAIMS VIEW (simple placeholder for now) -->
+      <div class="card hidden" id="claimsCard">
+        <h3 class="section-title">Claims (Demo)</h3>
+        <div style="color:#444; font-size:14px;">
+          This is a pilot demo shell. Next we’ll expand this into full claims, MPI checklist, approvals, parts/materials and audit readiness.
+        </div>
 
-    function applyPitchMode(){
-      document.body.classList.toggle("pitch", !!pitchMode);
-      document.getElementById("btnPitch").textContent = pitchMode ? "Exit Pitch Mode" : "Pitch Mode";
-    }
+        <div class="actions">
+          <button class="btn btn-primary" onclick="openDashboard()">Back to Dashboard</button>
+          <button class="btn btn-outline" onclick="alert('Demo: In production this would open the MPI checklist + evidence upload.')">Open Checklist</button>
+        </div>
 
-    function updateAll(){
-      renderChecklist();
-      updateKpis();
-      updatePreview();
-    }
+        <div class="tiny">
+          Note: This demo contains no real customer or MPI data.
+        </div>
+      </div>
 
-    // Save notes
-    document.getElementById("btnSaveNotes").addEventListener("click", ()=>{
-      const state = loadShopState(selectedShopKey);
-      state.notes = document.getElementById("notes").value || "";
-      state.updatedAt = nowStamp();
-      saveShopState(selectedShopKey, state);
-      toast("Notes saved");
-      updateAll();
-    });
+      <!-- CHECKLIST VIEW (simple placeholder for now) -->
+      <div class="card hidden" id="checklistCard">
+        <h3 class="section-title">MPI Checklist (Demo)</h3>
+        <div style="color:#444; font-size:14px;">
+          In production: tap-to-complete Records on File, attach photos and approvals, and maintain audit readiness.
+        </div>
 
-    // Change shop
-    shopSelect.addEventListener("change", ()=>{
-      selectedShopKey = shopSelect.value;
-      localStorage.setItem("selectedShopKey", selectedShopKey);
-      toast("Shop loaded");
-      updateAll();
-    });
+        <div class="actions">
+          <button class="btn btn-primary" onclick="openDashboard()">Back to Dashboard</button>
+          <button class="btn btn-outline" onclick="alert('Demo: This would add tagged evidence and log the action with time/date.')">Add Evidence</button>
+        </div>
 
-    // Reset shop
-    document.getElementById("btnReset").addEventListener("click", ()=>{
-      const cleared = defaultShopState();
-      cleared.updatedAt = nowStamp();
-      saveShopState(selectedShopKey, cleared);
-      toast("Shop reset");
-      updateAll();
-    });
+        <div class="tiny">
+          Enterprise default: Admin override requires reason and is fully logged.
+        </div>
+      </div>
 
-    // Pitch mode
-    document.getElementById("btnPitch").addEventListener("click", ()=>{
-      pitchMode = !pitchMode;
-      localStorage.setItem("pitchMode", pitchMode ? "1" : "0");
-      applyPitchMode();
-      toast(pitchMode ? "Pitch mode on" : "Pitch mode off");
-    });
+      <!-- ADMIN VIEW (simple placeholder for now) -->
+      <div class="card hidden" id="adminCard">
+        <h3 class="section-title">Admin: Security & Audits (Demo)</h3>
+        <div style="color:#444; font-size:14px;">
+          In production: remote access control, MFA enforcement, accountant export windows, and insurer audit access termination on “Audit Completed”.
+        </div>
 
-    // PRINT (mobile safe) — popup first, then fallback
-    function openPrintWindow({ title, contentHTML }){
-      const year = new Date().getFullYear();
+        <div class="actions">
+          <button class="btn btn-primary" onclick="openDashboard()">Back to Dashboard</button>
+          <button class="btn btn-outline" onclick="alert('Demo: Audit Completed would invalidate access and notify the shop.')">Audit Completed</button>
+        </div>
+      </div>
 
-      const printHtml = `
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${title}</title>
-  <style>
-    body{ font-family:Arial,sans-serif; margin:24px; color:#111; }
-    .header{ display:flex; gap:16px; align-items:center; margin-bottom:16px; }
-    .logo{ width:360px; height:auto; display:block; }
-    .footer{ margin-top:24px; font-size:12px; color:#6b7280; }
-    @media print{
-      body{ margin:12mm; }
-      .footer{ position:fixed; bottom:8mm; left:12mm; right:12mm; }
-    }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <img class="logo" src="./Onestop7.png" alt="One Stop Systems Logo">
-    <div>
-      <div style="font-weight:900;font-size:18px;">One Stop Systems</div>
-      <div style="font-size:12px;color:#6b7280;">MPI Checklist & Shop Readiness</div>
+      <!-- COPYRIGHT / CONFIDENTIAL -->
+      <footer>
+        © 2026 Greg Evanochko & Brad Beckett<br />
+        One Stop Compliance – RepairScope Platform<br />
+        Confidential &amp; Proprietary
+      </footer>
     </div>
-  </div>
 
-  <div class="report">${contentHTML}</div>
+    <!-- BOTTOM NAV -->
+    <div class="bottom-nav">
+      <div class="bottom-nav-inner">
+        <button id="navDashboard" class="nav-btn active" onclick="openDashboard()">Dashboard</button>
+        <button id="navClaims" class="nav-btn" onclick="openClaims()">Claims</button>
+        <button id="navChecklist" class="nav-btn" onclick="openChecklist()">Checklist</button>
+        <button id="navAdmin" class="nav-btn" onclick="openAdmin()">Admin</button>
+      </div>
+    </div>
 
-  <div class="footer">© ${year} One Stop Systems. All rights reserved.</div>
+    <script>
+      // Timestamps for demo
+      const now = Date.now();
+      document.getElementById("t1").textContent = new Date(now - 1000 * 60 * 18).toLocaleString();
+      document.getElementById("t2").textContent = new Date(now - 1000 * 60 * 75).toLocaleString();
+      document.getElementById("t3").textContent = new Date(now - 1000 * 60 * 9).toLocaleString();
 
-  <script>
-    const img = document.querySelector('.logo');
-    const go = () => { window.focus(); window.print(); };
-
-    // wait for logo
-    if (!img) go();
-    else if (img.complete) setTimeout(go, 150);
-    else {
-      img.onload = () => setTimeout(go, 150);
-      img.onerror = () => setTimeout(go, 150);
-    }
-
-    // extra fallback for some mobile browsers
-    setTimeout(go, 900);
-  <\/script>
-</body>
-</html>
-      `;
-
-      // Try popup (best case)
-      const w = window.open("", "_blank");
-      if (w) {
-        w.document.open();
-        w.document.write(printHtml);
-        w.document.close();
-        return;
+      function setActiveNav(which) {
+        const ids = ["navDashboard", "navClaims", "navChecklist", "navAdmin"];
+        ids.forEach((id) => document.getElementById(id).classList.remove("active"));
+        document.getElementById(which).classList.add("active");
       }
 
-      // Popup blocked fallback: swap page content and print
-      const original = document.documentElement.innerHTML;
-      document.open();
-      document.write(printHtml);
-      document.close();
+      function showOnly(cardId) {
+        const cards = ["dashboardCard", "claimsCard", "checklistCard", "adminCard"];
+        cards.forEach((id) => document.getElementById(id).classList.add("hidden"));
+        document.getElementById(cardId).classList.remove("hidden");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
 
-      setTimeout(() => {
-        window.print();
-        // restore after print attempt
-        setTimeout(() => {
-          document.open();
-          document.write(original);
-          document.close();
-          location.reload();
-        }, 800);
-      }, 350);
-    }
+      function openDashboard() {
+        setActiveNav("navDashboard");
+        showOnly("dashboardCard");
+      }
 
-    document.getElementById("btnPrint").addEventListener("click", ()=>{
-      const contentHTML = buildReportHTML();
-      openPrintWindow({ title: "One Stop Systems Report", contentHTML });
-    });
+      function openClaims() {
+        setActiveNav("navClaims");
+        showOnly("claimsCard");
+      }
 
-    // INIT
-    applyPitchMode();
-    updateAll();
-  </script>
-</body>
+      function openChecklist() {
+        setActiveNav("navChecklist");
+        showOnly("checklistCard");
+      }
+
+      function openAdmin() {
+        setActiveNav("navAdmin");
+        showOnly("adminCard");
+      }
+
+      // Ensure we start on dashboard
+      openDashboard();
+    </script>
+  </body>
 </html>
