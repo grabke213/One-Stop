@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>One Stop – Dashboard</title>
+  <title>One Stop Systems – Dashboard</title>
   <style>
     :root{
       --bg:#0b1220;
@@ -46,9 +46,7 @@
       border-right:1px solid var(--line);
       backdrop-filter: blur(10px);
     }
-    .main{
-      padding:18px;
-    }
+    .main{ padding:18px; }
 
     /* Sidebar content */
     .brand{
@@ -57,24 +55,27 @@
       border-bottom:1px solid var(--line);
       margin-bottom:12px;
     }
+
+    /* logo container (kept same size as before) */
     .logo{
       width:42px; height:42px; border-radius:12px;
-      background: linear-gradient(135deg, rgba(96,165,250,.95), rgba(34,197,94,.75));
+      background: rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.10);
       box-shadow: var(--shadow);
       display:grid; place-items:center;
-      font-weight:800; color:#071022;
+      overflow:hidden;
     }
-    .brand h1{
-      margin:0; font-size:16px; letter-spacing:.2px;
-    }
-    .brand p{
-      margin:2px 0 0; font-size:12px; color:var(--muted);
+    .logo img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
     }
 
-    .nav{
-      display:flex; flex-direction:column; gap:8px;
-      margin-top:12px;
-    }
+    .brand h1{ margin:0; font-size:16px; letter-spacing:.2px; }
+    .brand p{ margin:2px 0 0; font-size:12px; color:var(--muted); }
+
+    .nav{ display:flex; flex-direction:column; gap:8px; margin-top:12px; }
     .nav button{
       width:100%;
       text-align:left;
@@ -86,18 +87,10 @@
       cursor:pointer;
       display:flex; align-items:center; justify-content:space-between;
     }
-    .nav button:hover{
-      background: rgba(255,255,255,.04);
-      border-color: rgba(255,255,255,.06);
-    }
-    .nav button.active{
-      background: rgba(96,165,250,.14);
-      border-color: rgba(96,165,250,.28);
-    }
-    .nav .left{
-      display:flex; align-items:center; gap:10px;
-      font-weight:650;
-    }
+    .nav button:hover{ background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+    .nav button.active{ background: rgba(96,165,250,.14); border-color: rgba(96,165,250,.28); }
+    .nav .left{ display:flex; align-items:center; gap:10px; font-weight:650; }
+
     .dot{
       width:10px; height:10px; border-radius:99px;
       background: rgba(255,255,255,.25);
@@ -115,10 +108,8 @@
       border-radius: var(--radius);
       background: rgba(255,255,255,.03);
     }
-    .sidebarFooter .row{
-      display:flex; justify-content:space-between; align-items:center;
-      gap:10px;
-    }
+    .sidebarFooter .row{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+
     .pill{
       font-size:12px;
       padding:6px 10px;
@@ -138,19 +129,10 @@
       gap:12px;
       margin-bottom:16px;
     }
-    .titleBlock h2{
-      margin:0;
-      font-size:22px;
-      letter-spacing:.2px;
-    }
-    .titleBlock .sub{
-      margin-top:4px;
-      color:var(--muted);
-      font-size:13px;
-    }
-    .actions{
-      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
-    }
+    .titleBlock h2{ margin:0; font-size:22px; letter-spacing:.2px; }
+    .titleBlock .sub{ margin-top:4px; color:var(--muted); font-size:13px; }
+
+    .actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
     .btn{
       border:1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.04);
@@ -160,10 +142,8 @@
       cursor:pointer;
     }
     .btn:hover{ background: rgba(255,255,255,.06); }
-    .btn.primary{
-      border-color: rgba(96,165,250,.30);
-      background: rgba(96,165,250,.14);
-    }
+    .btn.primary{ border-color: rgba(96,165,250,.30); background: rgba(96,165,250,.14); }
+
     .search{
       display:flex; align-items:center; gap:10px;
       padding:10px 12px;
@@ -180,12 +160,19 @@
     }
     .search span{ color:var(--muted); font-size:13px; }
 
-    /* Cards / grid */
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap:14px;
+    /* Select */
+    .select{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      outline:0;
+      cursor:pointer;
     }
+
+    /* Cards / grid */
+    .grid{ display:grid; grid-template-columns: repeat(12, 1fr); gap:14px; }
     .card{
       grid-column: span 12;
       border-radius: var(--radius);
@@ -202,6 +189,7 @@
       color: rgba(229,231,235,.95);
     }
     .muted{ color:var(--muted); font-size:13px; }
+
     .kpis{
       display:grid;
       grid-template-columns: repeat(3, minmax(0,1fr));
@@ -216,6 +204,7 @@
     }
     .kpi .label{ color:var(--muted); font-size:12px; }
     .kpi .value{ font-size:20px; font-weight:800; margin-top:4px; }
+
     .bar{
       margin-top:10px;
       height:10px;
@@ -229,6 +218,7 @@
       width: 76%;
       background: linear-gradient(90deg, rgba(96,165,250,.95), rgba(34,197,94,.85));
     }
+
     .list{
       margin:0; padding:0;
       list-style:none;
@@ -241,10 +231,7 @@
       border:1px solid rgba(255,255,255,.08);
       background: rgba(255,255,255,.03);
     }
-    .item .left{
-      display:flex; align-items:center; gap:10px;
-      min-width:0;
-    }
+    .item .left{ display:flex; align-items:center; gap:10px; min-width:0; }
     .item .left b{
       font-size:13px;
       white-space:nowrap;
@@ -253,9 +240,131 @@
       max-width: 55vw;
     }
 
-    /* Tabs (content panes) */
+    /* Executive tiles shown in Pitch Mode */
+    .execTiles{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap:10px;
+      margin-top:10px;
+    }
+    .tile{
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      padding:14px;
+      background: rgba(255,255,255,.03);
+    }
+    .tile .tlabel{ color:var(--muted); font-size:12px; }
+    .tile .tvalue{ font-size:26px; font-weight:900; margin-top:6px; letter-spacing:.2px; }
+    .tile .tmeta{ margin-top:6px; color: rgba(229,231,235,.75); font-size:12px; }
+    .tile.good{ border-color: rgba(34,197,94,.25); background: rgba(34,197,94,.08); }
+    .tile.warn{ border-color: rgba(245,158,11,.25); background: rgba(245,158,11,.08); }
+    .tile.accent{ border-color: rgba(96,165,250,.25); background: rgba(96,165,250,.08); }
+
+    /* Assurance strip */
+    .assurance{
+      margin-top:12px;
+      border-radius:16px;
+      padding:12px 14px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.03);
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .assurance .left{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      color: rgba(229,231,235,.85);
+      font-size:12px;
+    }
+    .badge{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      color: rgba(229,231,235,.9);
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    /* Tabs */
     .tabPane{ display:none; }
     .tabPane.active{ display:block; }
+
+    /* Modal */
+    .modalBackdrop{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      z-index:999;
+    }
+    .modalBackdrop.open{ display:flex; }
+    .modal{
+      width: min(920px, 100%);
+      border-radius: 18px;
+      border:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(17,28,51,.97), rgba(17,28,51,.86));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .modalHeader{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:14px 14px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .modalHeader h4{
+      margin:0;
+      font-size:14px;
+      letter-spacing:.2px;
+    }
+    .modalBody{ padding:14px; }
+    .modalActions{
+      display:flex; gap:10px; flex-wrap:wrap;
+      padding:14px;
+      border-top:1px solid rgba(255,255,255,.08);
+      justify-content:flex-end;
+    }
+    .report{
+      background: rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      padding:14px;
+    }
+    .reportGrid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap:12px;
+      margin-top:10px;
+    }
+    .reportRow{
+      display:flex; justify-content:space-between; gap:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.03);
+      font-size:13px;
+    }
+    .reportRow span{ color: rgba(229,231,235,.9); }
+    .reportRow b{ color: rgba(229,231,235,.95); }
+
+    /* Footer */
+    .footer{
+      margin-top:18px;
+      text-align:center;
+      font-size:12px;
+      color: rgba(229,231,235,.55);
+    }
 
     /* Responsive */
     @media (max-width: 920px){
@@ -263,6 +372,9 @@
       .sidebar{ position:relative; height:auto; }
       .sidebarFooter{ position:relative; left:auto; right:auto; bottom:auto; margin-top:12px; }
       .search input{ width: 160px; }
+      .reportGrid{ grid-template-columns: 1fr; }
+      .execTiles{ grid-template-columns: 1fr; }
+      .kpis{ grid-template-columns: 1fr; }
     }
     @media (min-width: 920px){
       .span6{ grid-column: span 6; }
@@ -271,16 +383,42 @@
       .span4{ grid-column: span 4; }
       .span8{ grid-column: span 8; }
     }
+
+    /* =========================
+       Pitch Mode (MPI view)
+       ========================= */
+    body.pitch .demoOnly { display: none !important; }
+    body.pitch #btnNew { display: none !important; }
+    body.pitch #btnExport { display: none !important; }
+    body.pitch .search { display: none !important; }
+
+    /* Sidebar: Pitch Mode shows only Overview + Checklist */
+    body.pitch #nav button[data-tab="claims"],
+    body.pitch #nav button[data-tab="shop"],
+    body.pitch #nav button[data-tab="uploads"],
+    body.pitch #nav button[data-tab="settings"]{
+      display:none !important;
+    }
+
+    /* Overview: hide normal Quick Actions, show exec summary + assurance */
+    body.pitch #quickActionsCard { display:none !important; }
+    body.pitch #execSummaryCard { display:block !important; }
+    body.pitch #assuranceStrip { display:flex !important; }
+
+    body.pitch .titleBlock .sub { color: rgba(229,231,235,.75); }
   </style>
 </head>
+
 <body>
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
-        <div class="logo">OS</div>
+        <div class="logo" aria-label="One Stop Systems logo">
+          <img src="file_0000000038a4722fb66a2c7ead203e67.png" alt="One Stop Systems" />
+        </div>
         <div>
           <h1>One Stop</h1>
-          <p>MPI Shop Dashboard</p>
+          <p>Systems</p>
         </div>
       </div>
 
@@ -316,7 +454,7 @@
         </button>
       </nav>
 
-      <div class="sidebarFooter">
+      <div class="sidebarFooter demoOnly">
         <div class="row">
           <div>
             <div style="font-weight:750">Pilot Mode</div>
@@ -335,13 +473,21 @@
         </div>
 
         <div class="actions">
+          <select class="select" id="shopSelect" aria-label="Select shop">
+            <option value="oneStop">Shop: One Stop Collision</option>
+            <option value="northEnd">Shop: North End Auto (Demo)</option>
+            <option value="prairie">Shop: Prairie Bodyworks (Demo)</option>
+          </select>
+
           <div class="search">
             <span>Search</span>
             <input id="search" placeholder="claims, docs, tech…" />
           </div>
-<button class="btn" id="btnPitch">Pitch Mode</button>
-<button class="btn" id="btnExport">Export</button>
-<button class="btn primary" id="btnNew">New</button>
+
+          <button class="btn" id="btnReport">Readiness Report</button>
+          <button class="btn" id="btnPitch">Pitch Mode</button>
+          <button class="btn" id="btnExport">Export</button>
+          <button class="btn primary" id="btnNew">New</button>
         </div>
       </div>
 
@@ -350,30 +496,42 @@
         <div class="grid">
           <div class="card span7">
             <h3>Compliance Readiness</h3>
-            <div class="muted">Summary for this shop (demo)</div>
+            <div class="muted">Summary for selected shop</div>
 
             <div class="kpis">
               <div class="kpi">
                 <div class="label">Accreditation</div>
-                <div class="value">Active</div>
-                <div class="muted">Valid through: 2026</div>
+                <div class="value" id="kpiAccred">Active</div>
+                <div class="muted" id="kpiAccredMeta">Valid through: 2026</div>
               </div>
               <div class="kpi">
                 <div class="label">Open Items</div>
-                <div class="value">3</div>
-                <div class="muted">2 documents, 1 policy</div>
+                <div class="value" id="kpiOpen">3</div>
+                <div class="muted" id="kpiOpenMeta">2 documents, 1 policy</div>
               </div>
               <div class="kpi">
                 <div class="label">Audit Readiness</div>
-                <div class="value">76%</div>
-                <div class="muted">Goal: 90%</div>
+                <div class="value" id="kpiScore">76%</div>
+                <div class="muted" id="kpiScoreMeta">Target: 90%</div>
               </div>
             </div>
 
-            <div class="bar" aria-label="Readiness progress"><i></i></div>
+            <div class="bar" aria-label="Readiness progress"><i id="kpiBar" style="width:76%"></i></div>
+
+            <!-- Pitch Mode assurance strip -->
+            <div class="assurance" id="assuranceStrip" style="display:none">
+              <div class="left">
+                <span class="badge">No PII stored in pilot</span>
+                <span class="badge">Role-based access (planned)</span>
+                <span class="badge">Audit logging (planned)</span>
+                <span class="badge">Encryption in transit/at rest (when deployed)</span>
+              </div>
+              <div class="muted">MPI-facing view</div>
+            </div>
           </div>
 
-          <div class="card span5">
+          <!-- Normal (non-pitch) quick actions -->
+          <div class="card span5" id="quickActionsCard">
             <h3>Quick Actions</h3>
             <ul class="list">
               <li class="item">
@@ -395,20 +553,44 @@
             </ul>
           </div>
 
+          <!-- Executive summary (Pitch Mode only) -->
+          <div class="card span5" id="execSummaryCard" style="display:none">
+            <h3>Executive Summary</h3>
+            <div class="muted">Readiness at-a-glance</div>
+
+            <div class="execTiles">
+              <div class="tile accent">
+                <div class="tlabel">Readiness Score</div>
+                <div class="tvalue" id="tileScore">76%</div>
+                <div class="tmeta">Target: 90%</div>
+              </div>
+              <div class="tile warn">
+                <div class="tlabel">Open Items</div>
+                <div class="tvalue" id="tileOpen">3</div>
+                <div class="tmeta">Blocking: <span id="tileBlock">1</span></div>
+              </div>
+              <div class="tile good">
+                <div class="tlabel">Accreditation</div>
+                <div class="tvalue" id="tileAccred">Active</div>
+                <div class="tmeta" id="tileAccredMeta">Valid through 2026</div>
+              </div>
+            </div>
+          </div>
+
           <div class="card span6">
             <h3>Recent Activity</h3>
             <ul class="list" id="activity">
-              <li class="item"><div class="left"><span class="dot good"></span><b>Document uploaded:</b> Insurance.pdf</div><span class="muted">Today</span></li>
-              <li class="item"><div class="left"><span class="dot warn"></span><b>Checklist updated:</b> Photo standards</div><span class="muted">Yesterday</span></li>
-              <li class="item"><div class="left"><span class="dot"></span><b>Profile edited:</b> Shop hours</div><span class="muted">2d ago</span></li>
+              <li class="item"><div class="left"><span class="dot good"></span><b>Checklist reviewed</b></div><span class="muted">Today</span></li>
+              <li class="item"><div class="left"><span class="dot warn"></span><b>Outstanding item flagged</b></div><span class="muted">Yesterday</span></li>
+              <li class="item"><div class="left"><span class="dot"></span><b>Profile verified</b></div><span class="muted">2d ago</span></li>
             </ul>
           </div>
 
           <div class="card span6">
             <h3>Flags</h3>
-            <ul class="list">
-              <li class="item"><div class="left"><span class="dot warn"></span><b>WCB document expiring soon</b></div><span class="pill warn">14d</span></li>
-              <li class="item"><div class="left"><span class="dot warn"></span><b>2 claims missing photos</b></div><span class="pill">Needs</span></li>
+            <ul class="list" id="flagsList">
+              <li class="item"><div class="left"><span class="dot warn"></span><b>Compliance item approaching due date</b></div><span class="pill warn">14d</span></li>
+              <li class="item"><div class="left"><span class="dot warn"></span><b>Evidence needed for 2 checklist items</b></div><span class="pill">Needs</span></li>
               <li class="item"><div class="left"><span class="dot good"></span><b>No critical security issues</b></div><span class="pill good">OK</span></li>
             </ul>
           </div>
@@ -420,7 +602,7 @@
         <div class="grid">
           <div class="card span8">
             <h3>Claims Queue</h3>
-            <div class="muted">Demo items (tap “New” later to simulate adding)</div>
+            <div class="muted demoOnly">Demo items</div>
             <ul class="list" id="claimsList">
               <li class="item"><div class="left"><span class="dot warn"></span><b>#1024</b> • Estimate pending approval</div><span class="pill">Pending</span></li>
               <li class="item"><div class="left"><span class="dot good"></span><b>#1023</b> • Parts ordered</div><span class="pill good">In progress</span></li>
@@ -430,19 +612,9 @@
           <div class="card span4">
             <h3>Stats</h3>
             <div class="kpis">
-              <div class="kpi">
-                <div class="label">Open</div>
-                <div class="value">12</div>
-              </div>
-              <div class="kpi">
-                <div class="label">Pending</div>
-                <div class="value">4</div>
-              </div>
-              <div class="kpi">
-                <div class="label">Avg cycle</div>
-                <div class="value">6d</div>
-                <div class="muted">demo</div>
-              </div>
+              <div class="kpi"><div class="label">Open</div><div class="value">12</div></div>
+              <div class="kpi"><div class="label">Pending</div><div class="value">4</div></div>
+              <div class="kpi"><div class="label">Avg cycle</div><div class="value">6d</div><div class="muted demoOnly">demo</div></div>
             </div>
           </div>
         </div>
@@ -452,7 +624,7 @@
       <section class="tabPane" id="tab-checklist">
         <div class="grid">
           <div class="card span7">
-            <h3>MPI Readiness Checklist (Demo)</h3>
+            <h3>MPI Readiness Checklist</h3>
             <div class="muted">Toggle items to simulate progress</div>
 
             <ul class="list" id="checklist">
@@ -461,7 +633,7 @@
                 <label class="pill good"><input type="checkbox" checked data-check /> Done</label>
               </li>
               <li class="item">
-                <div class="left"><span class="dot good"></span><b>Technician certs on file</b></div>
+                <div class="left"><span class="dot good"></span><b>Technician certifications on file</b></div>
                 <label class="pill good"><input type="checkbox" checked data-check /> Done</label>
               </li>
               <li class="item">
@@ -469,11 +641,11 @@
                 <label class="pill"><input type="checkbox" data-check /> Mark</label>
               </li>
               <li class="item">
-                <div class="left"><span class="dot warn"></span><b>WCB + Insurance up to date</b></div>
+                <div class="left"><span class="dot warn"></span><b>Required documents verified</b></div>
                 <label class="pill"><input type="checkbox" data-check /> Mark</label>
               </li>
               <li class="item">
-                <div class="left"><span class="dot"></span><b>Secure document handling</b></div>
+                <div class="left"><span class="dot"></span><b>Secure document handling process</b></div>
                 <label class="pill"><input type="checkbox" data-check /> Mark</label>
               </li>
             </ul>
@@ -482,21 +654,12 @@
           <div class="card span5">
             <h3>Progress</h3>
             <div class="kpis">
-              <div class="kpi">
-                <div class="label">Completed</div>
-                <div class="value" id="chkDone">2</div>
-              </div>
-              <div class="kpi">
-                <div class="label">Total</div>
-                <div class="value" id="chkTotal">5</div>
-              </div>
-              <div class="kpi">
-                <div class="label">Score</div>
-                <div class="value" id="chkPct">40%</div>
-              </div>
+              <div class="kpi"><div class="label">Completed</div><div class="value" id="chkDone">2</div></div>
+              <div class="kpi"><div class="label">Total</div><div class="value" id="chkTotal">5</div></div>
+              <div class="kpi"><div class="label">Score</div><div class="value" id="chkPct">40%</div></div>
             </div>
             <div class="bar" style="margin-top:12px"><i id="chkBar" style="width:40%"></i></div>
-            <div class="muted" style="margin-top:10px">Tip: this will become your enforceable workflow later (roles + audit logs).</div>
+            <div class="muted demoOnly" style="margin-top:10px">Tip: later we add evidence notes, roles, audit logs, and export.</div>
           </div>
         </div>
       </section>
@@ -506,10 +669,10 @@
         <div class="grid">
           <div class="card span6">
             <h3>Shop Details</h3>
-            <div class="muted">Demo fields (we’ll wire these to a database later)</div>
+            <div class="muted demoOnly">Demo fields</div>
             <div style="display:grid; gap:10px; margin-top:10px">
-              <div class="item"><div class="left"><b>Shop Name</b></div><span class="pill">One Stop Collision</span></div>
-              <div class="item"><div class="left"><b>Address</b></div><span class="pill">Winnipeg, MB</span></div>
+              <div class="item"><div class="left"><b>Shop Name</b></div><span class="pill" id="shopNamePill">One Stop Collision</span></div>
+              <div class="item"><div class="left"><b>Address</b></div><span class="pill" id="shopAddrPill">Winnipeg, MB</span></div>
               <div class="item"><div class="left"><b>Contact</b></div><span class="pill">admin@shop.ca</span></div>
               <div class="item"><div class="left"><b>Hours</b></div><span class="pill">Mon–Fri 8–5</span></div>
             </div>
@@ -530,16 +693,16 @@
         <div class="grid">
           <div class="card span8">
             <h3>Uploads</h3>
-            <div class="muted">GitHub Pages can’t store private uploads; this is a visual demo. Later we’ll use secure storage.</div>
+            <div class="muted demoOnly">This is a visual demo. Real secure storage will be used in production.</div>
             <ul class="list">
-              <li class="item"><div class="left"><span class="dot good"></span><b>Insurance.pdf</b></div><span class="pill good">On file</span></li>
-              <li class="item"><div class="left"><span class="dot good"></span><b>WCB.pdf</b></div><span class="pill good">On file</span></li>
-              <li class="item"><div class="left"><span class="dot warn"></span><b>PhotoStandards.pdf</b></div><span class="pill">Missing</span></li>
+              <li class="item"><div class="left"><span class="dot good"></span><b>Required document – On file</b></div><span class="pill good">Verified</span></li>
+              <li class="item"><div class="left"><span class="dot good"></span><b>Required document – On file</b></div><span class="pill good">Verified</span></li>
+              <li class="item"><div class="left"><span class="dot warn"></span><b>Required document – Missing</b></div><span class="pill">Needs</span></li>
             </ul>
           </div>
           <div class="card span4">
             <h3>Notes</h3>
-            <div class="muted">Next: add “Upload request” buttons + approval status.</div>
+            <div class="muted demoOnly">Next: add “Upload request” buttons + approval status.</div>
           </div>
         </div>
       </section>
@@ -548,7 +711,7 @@
       <section class="tabPane" id="tab-settings">
         <div class="grid">
           <div class="card span6">
-            <h3>Admin Settings (Demo)</h3>
+            <h3>Admin Settings</h3>
             <ul class="list">
               <li class="item"><div class="left"><b>User Roles</b></div><span class="pill">Owner • Estimator • Tech</span></li>
               <li class="item"><div class="left"><b>Security</b></div><span class="pill good">MFA-ready</span></li>
@@ -557,43 +720,160 @@
           </div>
           <div class="card span6">
             <h3>Environment</h3>
-            <div class="muted">This is a static prototype hosted on GitHub Pages. For MPI partner-grade security, we’ll move to a proper backend with encryption + access controls.</div>
+            <div class="muted demoOnly">Static prototype hosted on GitHub Pages. For MPI-grade security, we’ll move to a real backend with encryption + access controls.</div>
           </div>
         </div>
       </section>
 
+      <div class="footer">
+        © 2026 One Stop Systems. All rights reserved.
+      </div>
     </main>
   </div>
 
+  <!-- Report Modal -->
+  <div class="modalBackdrop" id="reportModal" role="dialog" aria-modal="true" aria-label="Readiness Report">
+    <div class="modal">
+      <div class="modalHeader">
+        <h4>Readiness Report Preview</h4>
+        <button class="btn" id="btnCloseReport">Close</button>
+      </div>
+      <div class="modalBody">
+        <div class="report" id="reportContent">
+          <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+            <div>
+              <div style="font-weight:900; font-size:16px;">MPI Audit Readiness Report</div>
+              <div class="muted" style="margin-top:4px;">Generated from One Stop Systems (demo)</div>
+            </div>
+            <div class="muted" id="reportDate"></div>
+          </div>
+
+          <div class="reportGrid">
+            <div class="reportRow"><b>Shop</b><span id="rShop">—</span></div>
+            <div class="reportRow"><b>Accreditation</b><span id="rAccred">—</span></div>
+            <div class="reportRow"><b>Readiness Score</b><span id="rScore">—</span></div>
+            <div class="reportRow"><b>Open Items</b><span id="rOpen">—</span></div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <div class="muted">Assurances</div>
+            <ul style="margin:8px 0 0; padding-left:18px; color: rgba(229,231,235,.9); font-size:13px;">
+              <li>No PII stored in pilot</li>
+              <li>Role-based access & audit logging planned</li>
+              <li>Encryption in transit/at rest when deployed to production backend</li>
+            </ul>
+          </div>
+
+          <div style="margin-top:12px;">
+            <div class="muted">Notes</div>
+            <div style="margin-top:6px; color: rgba(229,231,235,.9); font-size:13px;">
+              This preview demonstrates audit-readiness reporting. Production implementation will include evidence links, timestamps, and role approvals.
+            </div>
+          </div>
+
+          <div style="margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,.08);">
+            <div class="muted">© 2026 One Stop Systems. All rights reserved.</div>
+          </div>
+        </div>
+      </div>
+      <div class="modalActions">
+        <button class="btn" id="btnPrintReport">Print / Save PDF</button>
+        <button class="btn primary" id="btnDoneReport">Done</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    const titles = {
-      overview: ["Overview", "High-level status across claims, compliance, and documents."],
-      claims: ["Claims", "Track and triage claims with simple statuses (demo)."],
-      checklist: ["Checklist", "Readiness items you can verify and audit (demo)."],
-      shop: ["Shop Profile", "Shop info, technicians, and certifications (demo)."],
-      uploads: ["Uploads", "Documents on file and missing items (demo)."],
-      settings: ["Settings", "Admin controls and security posture (demo)."]
+    // Demo shop dataset
+    const shops = {
+      oneStop: {
+        name: "One Stop Collision",
+        addr: "Winnipeg, MB",
+        accred: "Active",
+        accredMeta: "Valid through: 2026",
+        open: 3,
+        openMeta: "2 documents, 1 policy",
+        score: 76,
+        blocking: 1
+      },
+      northEnd: {
+        name: "North End Auto",
+        addr: "Winnipeg, MB",
+        accred: "Active",
+        accredMeta: "Valid through: 2026",
+        open: 5,
+        openMeta: "3 documents, 2 policy",
+        score: 68,
+        blocking: 2
+      },
+      prairie: {
+        name: "Prairie Bodyworks",
+        addr: "Brandon, MB",
+        accred: "Review",
+        accredMeta: "Verification pending",
+        open: 7,
+        openMeta: "5 documents, 2 policy",
+        score: 54,
+        blocking: 3
+      }
     };
 
+    // Titles
+    const titlesNormal = {
+      overview: ["Overview", "High-level status across claims, compliance, and documents."],
+      claims: ["Claims", "Track and triage claims with simple statuses."],
+      checklist: ["Checklist", "Readiness items you can verify and audit."],
+      shop: ["Shop Profile", "Shop info, technicians, and certifications."],
+      uploads: ["Uploads", "Documents on file and missing items."],
+      settings: ["Settings", "Admin controls and security posture."]
+    };
+    const titlesPitch = {
+      overview: ["MPI Audit Readiness", "Executive view of compliance readiness and outstanding items."],
+      checklist: ["MPI Checklist Status", "Verify readiness items and view overall completion score."]
+    };
+
+    // State
+    let pitchMode = (localStorage.getItem("pitchMode") === "1");
+    let selectedShopKey = localStorage.getItem("selectedShopKey") || "oneStop";
+
     function setTab(tab){
-      // nav state
       document.querySelectorAll("#nav button").forEach(b=>{
         b.classList.toggle("active", b.dataset.tab === tab);
       });
-      // panes
       document.querySelectorAll(".tabPane").forEach(p=>{
         p.classList.toggle("active", p.id === `tab-${tab}`);
       });
-      // header
-      document.getElementById("pageTitle").textContent = titles[tab][0];
-      document.getElementById("pageSub").textContent = titles[tab][1];
+      updateHeader(tab);
     }
 
-    document.getElementById("nav").addEventListener("click", (e)=>{
-      const btn = e.target.closest("button[data-tab]");
-      if(!btn) return;
-      setTab(btn.dataset.tab);
-    });
+    function getActiveTab(){
+      const activeBtn = document.querySelector("#nav button.active");
+      return activeBtn ? activeBtn.dataset.tab : "overview";
+    }
+
+    function updateHeader(tab){
+      const titleEl = document.getElementById("pageTitle");
+      const subEl = document.getElementById("pageSub");
+      const t = pitchMode ? (titlesPitch[tab] || titlesPitch.overview) : (titlesNormal[tab] || titlesNormal.overview);
+      titleEl.textContent = t[0];
+      subEl.textContent = t[1];
+    }
+
+    function applyPitchMode(){
+      document.body.classList.toggle("pitch", pitchMode);
+
+      const allowed = ["overview","checklist"];
+      const activeTab = getActiveTab();
+
+      if (pitchMode && !allowed.includes(activeTab)) {
+        setTab("overview");
+      } else {
+        updateHeader(activeTab);
+      }
+
+      const btn = document.getElementById("btnPitch");
+      btn.textContent = pitchMode ? "Exit Pitch" : "Pitch Mode";
+    }
 
     // Checklist progress
     function updateChecklist(){
@@ -610,17 +890,8 @@
     document.addEventListener("change", (e)=>{
       if(e.target.matches("[data-check]")) updateChecklist();
     });
-    updateChecklist();
 
-    // Top buttons (demo)
-    document.getElementById("btnNew").addEventListener("click", ()=>{
-      alert("Demo: Next we’ll add a real intake form + saved records.");
-    });
-    document.getElementById("btnExport").addEventListener("click", ()=>{
-      alert("Demo: Next we’ll export to PDF/CSV with audit log.");
-    });
-
-    // Search (simple demo filter on visible lists)
+    // Search filter (non-pitch)
     document.getElementById("search").addEventListener("input", (e)=>{
       const q = e.target.value.trim().toLowerCase();
       const activePane = document.querySelector(".tabPane.active");
@@ -631,6 +902,122 @@
         row.style.display = (!q || text.includes(q)) ? "" : "none";
       });
     });
+
+    // Nav click
+    document.getElementById("nav").addEventListener("click", (e)=>{
+      const btn = e.target.closest("button[data-tab]");
+      if(!btn) return;
+      setTab(btn.dataset.tab);
+    });
+
+    // Top buttons (demo)
+    document.getElementById("btnNew").addEventListener("click", ()=>{
+      alert("Demo: Next we’ll add a real intake form + saved records.");
+    });
+    document.getElementById("btnExport").addEventListener("click", ()=>{
+      alert("Demo: Next we’ll export to CSV/PDF with audit log.");
+    });
+
+    // Shop selector
+    function applyShop(key){
+      const s = shops[key] || shops.oneStop;
+
+      document.getElementById("kpiAccred").textContent = s.accred;
+      document.getElementById("kpiAccredMeta").textContent = s.accredMeta;
+      document.getElementById("kpiOpen").textContent = String(s.open);
+      document.getElementById("kpiOpenMeta").textContent = s.openMeta;
+      document.getElementById("kpiScore").textContent = `${s.score}%`;
+      document.getElementById("kpiScoreMeta").textContent = "Target: 90%";
+      document.getElementById("kpiBar").style.width = `${s.score}%`;
+
+      document.getElementById("tileScore").textContent = `${s.score}%`;
+      document.getElementById("tileOpen").textContent = String(s.open);
+      document.getElementById("tileBlock").textContent = String(s.blocking);
+      document.getElementById("tileAccred").textContent = s.accred;
+      document.getElementById("tileAccredMeta").textContent = s.accredMeta.replace("Valid through:", "Valid through");
+
+      const namePill = document.getElementById("shopNamePill");
+      const addrPill = document.getElementById("shopAddrPill");
+      if (namePill) namePill.textContent = s.name;
+      if (addrPill) addrPill.textContent = s.addr;
+    }
+
+    const shopSelect = document.getElementById("shopSelect");
+    shopSelect.value = selectedShopKey;
+    shopSelect.addEventListener("change", (e)=>{
+      selectedShopKey = e.target.value;
+      localStorage.setItem("selectedShopKey", selectedShopKey);
+      applyShop(selectedShopKey);
+    });
+
+    // Report modal
+    const reportModal = document.getElementById("reportModal");
+    function openReport(){
+      const s = shops[selectedShopKey] || shops.oneStop;
+      const now = new Date();
+
+      document.getElementById("reportDate").textContent = now.toLocaleString();
+      document.getElementById("rShop").textContent = s.name;
+      document.getElementById("rAccred").textContent = `${s.accred} (${s.accredMeta})`;
+      document.getElementById("rScore").textContent = `${s.score}%`;
+      document.getElementById("rOpen").textContent = `${s.open} (blocking: ${s.blocking})`;
+
+      reportModal.classList.add("open");
+    }
+    function closeReport(){
+      reportModal.classList.remove("open");
+    }
+
+    document.getElementById("btnReport").addEventListener("click", openReport);
+    document.getElementById("btnCloseReport").addEventListener("click", closeReport);
+    document.getElementById("btnDoneReport").addEventListener("click", closeReport);
+    reportModal.addEventListener("click", (e)=>{
+      if(e.target === reportModal) closeReport();
+    });
+
+    // Print report: print only report content + add footer copyright
+    document.getElementById("btnPrintReport").addEventListener("click", ()=>{
+      const content = document.getElementById("reportContent").innerHTML;
+      const w = window.open("", "_blank");
+      if(!w) { alert("Pop-up blocked. Try again or allow popups."); return; }
+      w.document.write(`
+        <html>
+          <head>
+            <title>Readiness Report</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <style>
+              body{ font-family: Arial, sans-serif; margin:24px; }
+              .muted{ color:#555; font-size:12px; }
+              .report{ border:1px solid #ddd; padding:16px; border-radius:10px; }
+              .reportGrid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px; }
+              .reportRow{ border:1px solid #eee; padding:10px 12px; border-radius:10px; display:flex; justify-content:space-between; gap:10px; }
+              .footer{ margin-top:14px; font-size:11px; color:#666; text-align:center; }
+              @media (max-width:700px){ .reportGrid{ grid-template-columns:1fr; } }
+            </style>
+          </head>
+          <body>
+            <div class="report">${content}</div>
+            <div class="footer">© 2026 One Stop Systems. All rights reserved.</div>
+            <script>
+              window.onload = () => { window.print(); };
+            </script>
+          </body>
+        </html>
+      `);
+      w.document.close();
+    });
+
+    // Pitch toggle
+    document.getElementById("btnPitch").addEventListener("click", ()=>{
+      pitchMode = !pitchMode;
+      localStorage.setItem("pitchMode", pitchMode ? "1" : "0");
+      applyPitchMode();
+    });
+
+    // Init
+    applyShop(selectedShopKey);
+    updateChecklist();
+    applyPitchMode();
   </script>
 </body>
-                                 </html>
+</html>
