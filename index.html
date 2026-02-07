@@ -12,7 +12,7 @@
     }
     *{box-sizing:border-box}
     body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
-    .container{max-width:1060px;margin:0 auto;padding:16px;padding-bottom:130px}
+    .container{max-width:1060px;margin:0 auto;padding:16px;padding-bottom:140px}
 
     .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border:1px solid var(--border);border-radius:18px;background:var(--card);box-shadow:var(--shadow)}
     .brand{display:flex;align-items:center;gap:12px;min-width:0}
@@ -95,7 +95,7 @@
     /* Modal */
     .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;padding:10px;z-index:9999}
     @media(min-width:720px){.modal-overlay{align-items:center}}
-    .modal{width:100%;max-width:620px;background:#fff;border-radius:20px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.18);overflow:hidden}
+    .modal{width:100%;max-width:640px;background:#fff;border-radius:20px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.18);overflow:hidden}
     .modal-header{padding:14px 14px 10px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px}
     .modal-title{font-size:16px;font-weight:950}
     .modal-close{border:0;background:#fff;border-radius:12px;padding:8px 10px;font-weight:950;cursor:pointer}
@@ -105,7 +105,7 @@
 
     /* Bottom nav */
     .bottom-nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--border);padding:8px}
-    .bottom-nav-inner{max-width:1060px;margin:0 auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+    .bottom-nav-inner{max-width:1060px;margin:0 auto;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
     .nav-btn{border:0;border-radius:16px;padding:10px 8px;background:#fff;border:1px solid transparent;font-weight:950;font-size:12px;color:#222}
     .nav-btn.active{background:#111;color:#fff}
 
@@ -149,7 +149,7 @@
         <span class="badge">Role: <span id="whoRole" class="mono">—</span></span>
 
         <select class="select" id="claimSelect" onchange="setCurrentClaim(this.value)"></select>
-        <button class="btn btn-outline" onclick="openCreateClaimModal()">+ New Claim</button>
+        <button class="btn btn-outline" onclick="openCreateClaimModal()" id="btnNewClaim">+ New Claim</button>
       </div>
       <div class="small">
         Current claim: <span id="currentClaimLabel" class="mono">—</span>
@@ -168,7 +168,10 @@
     <!-- DASHBOARD -->
     <div class="card" id="dashboardCard">
       <h3 class="section-title">Dashboard</h3>
-      <div class="small">Pilot-grade “real” workflow (stored locally). Export data to review and streamline.</div>
+      <div class="small">Pilot-grade workflow (stored locally). Audit Mode included (MPI-first).</div>
+
+      <div class="badge-row" id="auditBanner"></div>
+
       <div style="height:10px"></div>
       <div id="dashboardClaims"></div>
 
@@ -195,13 +198,14 @@
         <span class="badge warn" id="authBadge">MPI Verbal Auth: Not recorded</span>
         <span class="badge" id="portalBadge">MPI Portal: Not opened</span>
         <span class="badge" id="lockedBadge">Edit: Locked</span>
+        <span class="badge info" id="auditStateBadge">Audit: —</span>
       </div>
 
       <div class="tabs" id="workspaceTabs">
         <button class="tab active" onclick="setWorkspaceTab('overview')">Overview</button>
-        <button class="tab" onclick="setWorkspaceTab('tech')">Tech</button>
-        <button class="tab" onclick="setWorkspaceTab('parts')">Parts</button>
-        <button class="tab" onclick="setWorkspaceTab('materials')">Materials</button>
+        <button class="tab" onclick="setWorkspaceTab('tech')" id="tabTech">Tech</button>
+        <button class="tab" onclick="setWorkspaceTab('parts')" id="tabParts">Parts</button>
+        <button class="tab" onclick="setWorkspaceTab('materials')" id="tabMaterials">Materials</button>
         <button class="tab" onclick="setWorkspaceTab('checklist')">MPI Checklist</button>
         <button class="tab" onclick="setWorkspaceTab('evidence')">Evidence</button>
         <button class="tab" onclick="setWorkspaceTab('audit')">Audit Log</button>
@@ -220,17 +224,19 @@
         <button class="btn btn-primary" onclick="openDashboard()">Back to Dashboard</button>
         <button class="btn btn-outline" id="btnPortal" onclick="openMPIPortal()">Open MPI Portal</button>
         <button class="btn btn-outline" id="btnAuth" onclick="openAuthModal()">Enter MPI Authorization Code</button>
+        <button class="btn btn-outline" id="btnRequestAudit" onclick="openAuditRequestModal()">Request MPI Audit</button>
         <button class="btn btn-danger" id="btnCloseClaim" onclick="closeClaim()">Close Claim</button>
       </div>
     </div>
 
-    <!-- CHECKLIST PAGE (nav) -->
+    <!-- CHECKLIST PAGE -->
     <div class="card hidden" id="checklistCard">
       <h3 class="section-title">MPI Checklist (Quick View)</h3>
-      <div class="small">Same checklist as claim workspace; included here for navigation simplicity.</div>
+      <div class="small">Audit Mode: Auditor sees Checklist + Evidence + Audit Log only.</div>
       <div class="badge-row">
         <span class="badge" id="checkClaimBadge">Claim: —</span>
         <span class="badge" id="checkProgressBadge">Progress: —</span>
+        <span class="badge info" id="checkAuditBadge">Audit: —</span>
       </div>
       <div style="height:10px"></div>
       <div id="checklistItems"></div>
@@ -246,24 +252,22 @@
       </div>
     </div>
 
-    <!-- ADMIN / PILOT PREP -->
+    <!-- ADMIN -->
     <div class="card hidden" id="adminCard">
       <h3 class="section-title">Admin / Pilot Prep (Safe Mode)</h3>
       <div class="badge-row">
         <span class="badge ok">No insurer credential storage</span>
         <span class="badge ok">No portal automation/scraping</span>
-        <span class="badge ok">Audit log enabled</span>
+        <span class="badge ok">Audit Mode included</span>
         <span class="badge">MPI portal: <span class="mono">mpipartners.ca</span></span>
       </div>
 
       <div class="hr"></div>
 
-      <h3 class="section-title">Pilot Script</h3>
-      <div class="small">
-        <b>Open:</b> “This is One Stop Compliance – RepairScope Platform. It doesn’t replace MPI — it organizes approvals, evidence, and accountability so nothing gets missed.”<br><br>
-        <b>Show:</b> Dashboard → open claim → Open MPI Portal (separate login) → record verbal authorization → request parts/materials → show audit log → export report.<br><br>
-        <b>Close:</b> “If this reduces delays and prevents missed approvals, it pays for itself quickly. I’m looking for 1–2 pilot shops to shape it with real workflows.”
-      </div>
+      <h3 class="section-title">Audit Requests (MPI-first)</h3>
+      <div class="small">Only Admin can approve/start/complete audits. Auditor access is claim-scoped and read-only.</div>
+      <div style="height:10px"></div>
+      <div id="auditRequestsList"></div>
 
       <div class="hr"></div>
 
@@ -366,13 +370,54 @@
     </div>
   </div>
 
+  <div class="modal-overlay hidden" id="auditRequestModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">Request MPI Audit (Pilot)</div>
+          <div class="confidential">Creates a controlled, claim-scoped, read-only audit session.</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('auditRequestModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="field-label">Claim</div>
+        <select class="input" id="auditClaimSelect"></select>
+
+        <div style="height:12px;"></div>
+        <div class="field-label">Requesting organization</div>
+        <select class="input" id="auditOrg">
+          <option value="MPI">MPI</option>
+          <option value="Corporate">Corporate (MSO HQ)</option>
+          <option value="Other Insurer">Other Insurer (future)</option>
+        </select>
+
+        <div style="height:12px;"></div>
+        <div class="field-label">Auditor name (for log only)</div>
+        <input class="input" id="auditAuditorName" placeholder="e.g., MPI Auditor Smith" />
+
+        <div style="height:12px;"></div>
+        <div class="field-label">Scope notes (optional)</div>
+        <input class="input" id="auditScope" placeholder="What is being audited? (approvals, evidence, supplements)" />
+
+        <div class="help small" style="margin-top:10px;">
+          In this pilot, Auditor login is “Auditor (Demo)” PIN. In production, this becomes time-limited, token-based access.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('auditRequestModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="createAuditRequest()">Create Request</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Bottom nav -->
   <div class="bottom-nav">
     <div class="bottom-nav-inner">
       <button id="navDashboard" class="nav-btn active" onclick="openDashboard()">Dashboard</button>
-      <button id="navClaims" class="nav-btn" onclick="openClaim()">Claims</button>
+      <button id="navClaims" class="nav-btn" onclick="openClaim()">Claim</button>
       <button id="navChecklist" class="nav-btn" onclick="openChecklist()">Checklist</button>
       <button id="navAdmin" class="nav-btn" onclick="openAdmin()">Admin</button>
+      <button id="navAudit" class="nav-btn" onclick="openAuditHome()">Audit</button>
     </div>
   </div>
 
@@ -381,7 +426,7 @@
   const MPI_PORTAL_URL = "https://mpipartners.ca/Login.aspx";
 
   // ===== STORAGE =====
-  const STORAGE_KEY = "osc_pilot_static_v1";
+  const STORAGE_KEY = "osc_pilot_static_v1_1_audit";
 
   function nowISO(){ return new Date().toISOString(); }
   function fmt(iso){ return new Date(iso).toLocaleString(); }
@@ -389,7 +434,6 @@
 
   // ===== DEFAULTS =====
   function defaultUsers(){
-    // These are demo users; Admin can rotate pins
     return [
       { id: "u_admin", name:"Admin", role:"Admin", pin:"1234", enabled:true },
       { id: "u_est", name:"Estimator", role:"Estimator", pin:"2222", enabled:true },
@@ -419,25 +463,16 @@
         nextAction:"Enter MPI verbal auth code + proof; Admin approve OEM delta",
         checklist: defaultChecklist(),
         mpiAuth:null, mpiPortalOpenedAt:null,
-        techAssignments: [], // {techName, task, startedAt, endedAt}
-        partsRequests: [],   // see below
-        materialsRequests: [], // see below
-        evidence: [] // {type, label, by, at, notes}
+        techAssignments: [],
+        partsRequests: [],
+        materialsRequests: [],
+        evidence: []
       },
       {
         id:"MPI-1023559", ro:"RO-7720", vehicle:"2019 Honda CR-V",
         status:"Waiting Parts", open:true,
         lastActivity:new Date(t-1000*60*75).toISOString(),
         nextAction:"Get ETA update; notify customer",
-        checklist: defaultChecklist().map(x=> ({...x, done:false})),
-        mpiAuth:null, mpiPortalOpenedAt:null,
-        techAssignments: [], partsRequests: [], materialsRequests: [], evidence:[]
-      },
-      {
-        id:"MPI-1023602", ro:"RO-7731", vehicle:"2021 Toyota RAV4",
-        status:"Planning", open:true,
-        lastActivity:new Date(t-1000*60*9).toISOString(),
-        nextAction:"Issue materials from stock or order seam sealer",
         checklist: defaultChecklist().map(x=> ({...x, done:false})),
         mpiAuth:null, mpiPortalOpenedAt:null,
         techAssignments: [], partsRequests: [], materialsRequests: [], evidence:[]
@@ -452,7 +487,9 @@
       currentClaimId:"MPI-1023481",
       users: defaultUsers(),
       claims: defaultClaims(),
-      auditLog: [] // {at, userId, userName, role, claimId, action, details}
+      auditLog: [],
+      auditRequests: [], // {id, org, auditorName, scope, claimId, status, requestedAt, requestedBy, approvedAt, approvedBy, startedAt, completedAt, completedBy}
+      activeAuditSession: null // {auditRequestId, claimId, org, startedAt}  (Auditor role uses this)
     };
   }
 
@@ -467,6 +504,8 @@
       if(!obj.users) obj.users = defaultUsers();
       if(!obj.claims) obj.claims = defaultClaims();
       if(!obj.auditLog) obj.auditLog = [];
+      if(!obj.auditRequests) obj.auditRequests = [];
+      if(!("activeAuditSession" in obj)) obj.activeAuditSession = null;
       if(!obj.currentClaimId) obj.currentClaimId = obj.claims[0]?.id || null;
       return obj;
     }catch{
@@ -480,10 +519,9 @@
     if(!state.currentUserId) return null;
     return state.users.find(u => u.id === state.currentUserId) || null;
   }
-
-  function getClaim(id){
-    return state.claims.find(c => c.id === id) || null;
-  }
+  function role(){ return getUser()?.role || "LOCKED"; }
+  function isUnlocked(){ return state.sessionUnlocked && !!getUser(); }
+  function getClaim(id){ return state.claims.find(c => c.id === id) || null; }
 
   // ===== LOGGING =====
   function addLog(action, details, claimIdOverride){
@@ -499,36 +537,35 @@
       details: details || ""
     };
     state.auditLog.unshift(entry);
-    state.auditLog = state.auditLog.slice(0, 80);
+    state.auditLog = state.auditLog.slice(0, 120);
     saveState();
     renderAll(false);
   }
 
   // ===== PERMISSIONS =====
-  function role(){ return getUser()?.role || "LOCKED"; }
-  function isUnlocked(){ return state.sessionUnlocked && !!getUser(); }
+  function canEditClaim(){ return isUnlocked() && (role()==="Estimator" || role()==="Admin"); }
+  function canTechWork(){ return isUnlocked() && (role()==="Tech" || role()==="Admin"); }
+  function canApproveParts(){ return isUnlocked() && role()==="Admin"; }
+  function canApproveMaterials(){ return isUnlocked() && (role()==="Estimator" || role()==="Admin"); }
+  function canExport(){ return isUnlocked() && (role()==="Admin" || role()==="Estimator" || role()==="Accountant"); }
+  function canOpenPortal(){ return isUnlocked() && role()!=="Auditor"; }
+  function isAuditor(){ return isUnlocked() && role()==="Auditor"; }
+  function auditorClaimLock(){
+    // Auditor can only view claim if there is an active audit session
+    if(!isAuditor()) return null;
+    return state.activeAuditSession?.claimId || null;
+  }
 
-  function canEditClaim(){
-    return isUnlocked() && (role()==="Estimator" || role()==="Admin");
+  // ===== AUDIT HELPERS =====
+  function auditForClaim(claimId){
+    // Return latest relevant audit request
+    const list = state.auditRequests.filter(a=>a.claimId===claimId);
+    if(list.length===0) return null;
+    return list.slice().sort((a,b)=> new Date(b.requestedAt)-new Date(a.requestedAt))[0];
   }
-  function canTechWork(){
-    return isUnlocked() && (role()==="Tech" || role()==="Admin");
-  }
-  function canApproveParts(){
-    return isUnlocked() && (role()==="Admin"); // admin only for cost deltas / exceptions
-  }
-  function canApproveMaterials(){
-    return isUnlocked() && (role()==="Estimator" || role()==="Admin");
-  }
-  function canAccountantExport(){
-    // Accountant can export only if unlocked (in real app, would require admin grant)
-    return isUnlocked() && (role()==="Accountant" || role()==="Admin");
-  }
-  function canAuditorView(){
-    return isUnlocked() && role()==="Auditor";
-  }
-  function canOpenPortal(){
-    return isUnlocked() && role()!=="Auditor";
+  function auditStatusLabel(a){
+    if(!a) return "None";
+    return a.status;
   }
 
   // ===== LOGIN (PIN) =====
@@ -550,12 +587,26 @@
     const user = state.users.find(u=>u.id===uidSel);
     if(!user){ alert("Select a user."); return; }
     if(pin !== user.pin){ alert("Incorrect PIN"); addLog("Failed PIN login", `User ${user.name}`); return; }
+
     state.currentUserId = user.id;
     state.sessionUnlocked = true;
     document.getElementById("pinInput").value = "";
     saveState();
     addLog("PIN login success", `${user.name} (${user.role})`);
+
+    // If Auditor, force claim lock
+    if(user.role === "Auditor"){
+      if(!state.activeAuditSession){
+        alert("No active audit session. Admin must start the audit first.");
+        addLog("Auditor login blocked", "No active audit session");
+      } else {
+        state.currentClaimId = state.activeAuditSession.claimId;
+        addLog("Auditor session active", `Claim locked to ${state.currentClaimId}`, state.currentClaimId);
+      }
+    }
+    saveState();
     renderAll(true);
+    openAuditHome();
   }
 
   function logout(){
@@ -568,11 +619,11 @@
 
   // ===== NAVIGATION =====
   function setActiveNav(which){
-    ["navDashboard","navClaims","navChecklist","navAdmin"].forEach(id=>document.getElementById(id).classList.remove("active"));
+    ["navDashboard","navClaims","navChecklist","navAdmin","navAudit"].forEach(id=>document.getElementById(id).classList.remove("active"));
     document.getElementById(which).classList.add("active");
   }
   function showOnly(cardId){
-    ["dashboardCard","claimsCard","checklistCard","adminCard"].forEach(id=>document.getElementById(id).classList.add("hidden"));
+    ["dashboardCard","claimsCard","checklistCard","adminCard","auditHomeCard"].forEach(id=>document.getElementById(id).classList.add("hidden"));
     document.getElementById(cardId).classList.remove("hidden");
     window.scrollTo({top:0,behavior:"smooth"});
   }
@@ -580,21 +631,44 @@
   function openClaim(){ setActiveNav("navClaims"); showOnly("claimsCard"); addLog("Viewed Claim Workspace"); renderWorkspace(); }
   function openChecklist(){ setActiveNav("navChecklist"); showOnly("checklistCard"); addLog("Viewed MPI Checklist"); renderChecklist(); }
   function openAdmin(){ setActiveNav("navAdmin"); showOnly("adminCard"); addLog("Viewed Admin"); renderAdmin(); }
+  function openAuditHome(){ setActiveNav("navAudit"); showOnly("auditHomeCard"); addLog("Viewed Audit Home"); renderAuditHome(); }
 
   // ===== CLAIM SELECT =====
   function renderClaimSelect(){
     const sel = document.getElementById("claimSelect");
     sel.innerHTML = "";
-    state.claims.forEach(c=>{
+
+    let claimsToShow = state.claims;
+
+    // Auditor: only locked claim
+    if(isAuditor()){
+      const lock = auditorClaimLock();
+      claimsToShow = lock ? state.claims.filter(c=>c.id===lock) : [];
+    }
+
+    claimsToShow.forEach(c=>{
       const opt = document.createElement("option");
       opt.value = c.id;
       opt.textContent = `${c.id} (${c.ro})${c.open ? "" : " • CLOSED"}`;
       sel.appendChild(opt);
     });
+
+    if(isAuditor()){
+      const lock = auditorClaimLock();
+      state.currentClaimId = lock || state.currentClaimId;
+    }
+
     sel.value = state.currentClaimId;
     document.getElementById("currentClaimLabel").textContent = state.currentClaimId || "—";
   }
+
   function setCurrentClaim(id){
+    if(isAuditor()){
+      alert("Auditor cannot change claims.");
+      addLog("Blocked: Change claim", "Auditor claim locked");
+      renderAll(false);
+      return;
+    }
     state.currentClaimId = id;
     saveState();
     addLog("Selected Claim", id, id);
@@ -623,36 +697,71 @@
     document.getElementById("kpiClosed").textContent = closed;
   }
 
+  function renderAuditBanner(){
+    const el = document.getElementById("auditBanner");
+    el.innerHTML = "";
+    if(isAuditor()){
+      const lock = auditorClaimLock();
+      if(lock){
+        el.innerHTML = `<span class="badge info">AUDIT MODE: Read-only • Claim locked to ${escapeHtml(lock)}</span>`;
+      } else {
+        el.innerHTML = `<span class="badge warn">AUDIT MODE: No active session. Admin must start audit.</span>`;
+      }
+    } else {
+      const active = state.activeAuditSession;
+      if(active){
+        el.innerHTML = `<span class="badge info">Active Audit Session: ${escapeHtml(active.org)} • Claim ${escapeHtml(active.claimId)} • Started ${fmt(active.startedAt)}</span>`;
+      }
+    }
+  }
+
   function renderDashboardClaims(){
     const el = document.getElementById("dashboardClaims");
     el.innerHTML = "";
-    state.claims
-      .slice()
-      .sort((a,b)=> (b.open - a.open) || (new Date(b.lastActivity)-new Date(a.lastActivity)))
-      .forEach(c=>{
-        const missing = c.checklist.filter(x=>!x.done).length + (c.mpiAuth?0:1);
-        const btn = document.createElement("button");
-        btn.className="claim";
-        btn.onclick=()=>{ setCurrentClaim(c.id); openClaim(); };
-        btn.innerHTML = `
-          <div class="claim-row">
-            <div>
-              <div class="claim-id">${c.id}</div>
-              <div class="claim-muted">${c.vehicle} • ${c.ro}</div>
-              <div class="claim-muted">Last: ${fmt(c.lastActivity)} • Missing: <b>${missing}</b></div>
-            </div>
-            <div class="status">${c.open ? c.status : "CLOSED"}</div>
+
+    let list = state.claims.slice().sort((a,b)=> (b.open - a.open) || (new Date(b.lastActivity)-new Date(a.lastActivity)));
+    if(isAuditor()){
+      const lock = auditorClaimLock();
+      list = lock ? list.filter(c=>c.id===lock) : [];
+    }
+
+    list.forEach(c=>{
+      const missing = c.checklist.filter(x=>!x.done).length + (c.mpiAuth?0:1);
+      const a = auditForClaim(c.id);
+      const aLabel = auditStatusLabel(a);
+      const btn = document.createElement("button");
+      btn.className="claim";
+      btn.onclick=()=>{ state.currentClaimId = c.id; saveState(); openClaim(); };
+      btn.innerHTML = `
+        <div class="claim-row">
+          <div>
+            <div class="claim-id">${c.id}</div>
+            <div class="claim-muted">${escapeHtml(c.vehicle)} • ${escapeHtml(c.ro)}</div>
+            <div class="claim-muted">Last: ${fmt(c.lastActivity)} • Missing: <b>${missing}</b></div>
+            <div class="claim-muted">Audit: <b>${escapeHtml(aLabel)}</b></div>
           </div>
-          <div class="claim-next"><b>Next:</b> ${c.nextAction || "—"}</div>
-        `;
-        el.appendChild(btn);
-        const spacer=document.createElement("div");spacer.style.height="10px";el.appendChild(spacer);
-      });
+          <div class="status">${c.open ? c.status : "CLOSED"}</div>
+        </div>
+        <div class="claim-next"><b>Next:</b> ${escapeHtml(c.nextAction || "—")}</div>
+      `;
+      el.appendChild(btn);
+      const spacer=document.createElement("div");spacer.style.height="10px";el.appendChild(spacer);
+    });
+
+    if(list.length===0){
+      el.innerHTML = `<div class="small">No claims available in this mode.</div>`;
+    }
   }
 
   // ===== WORKSPACE TABS =====
   let workspaceTab = "overview";
   function setWorkspaceTab(tab){
+    // Auditor: restrict tabs
+    if(isAuditor() && ["tech","parts","materials"].includes(tab)){
+      alert("Auditor cannot view Tech/Parts/Materials in MPI audit scope.");
+      addLog("Blocked: Open restricted tab", tab);
+      tab = "overview";
+    }
     workspaceTab = tab;
     [...document.querySelectorAll("#workspaceTabs .tab")].forEach(b=>b.classList.remove("active"));
     const btns = [...document.querySelectorAll("#workspaceTabs .tab")];
@@ -799,15 +908,139 @@
     openDashboard();
   }
 
+  // ===== AUDIT REQUEST MODAL =====
+  function openAuditRequestModal(){
+    if(!(isUnlocked() && (role()==="Estimator" || role()==="Admin"))){
+      alert("Only Estimator/Admin can request audits.");
+      addLog("Blocked: Request audit","Role restricted");
+      return;
+    }
+    const sel = document.getElementById("auditClaimSelect");
+    sel.innerHTML = "";
+    state.claims.forEach(c=>{
+      const opt = document.createElement("option");
+      opt.value=c.id; opt.textContent=`${c.id} (${c.ro})`;
+      sel.appendChild(opt);
+    });
+    sel.value = state.currentClaimId;
+    document.getElementById("auditOrg").value = "MPI";
+    document.getElementById("auditAuditorName").value = "";
+    document.getElementById("auditScope").value = "";
+    openModal("auditRequestModal");
+    addLog("Opened Audit Request modal");
+  }
+
+  function createAuditRequest(){
+    const claimId = document.getElementById("auditClaimSelect").value;
+    const org = document.getElementById("auditOrg").value;
+    const auditorName = document.getElementById("auditAuditorName").value.trim() || "Auditor (not entered)";
+    const scope = document.getElementById("auditScope").value.trim() || "";
+
+    const req = {
+      id: uid(),
+      claimId,
+      org,
+      auditorName,
+      scope,
+      status: "Requested",
+      requestedAt: nowISO(),
+      requestedBy: `${getUser().name} (${role()})`,
+      approvedAt:null, approvedBy:null,
+      startedAt:null,
+      completedAt:null, completedBy:null
+    };
+    state.auditRequests.unshift(req);
+    saveState();
+    addLog("Audit requested", `${org} • ${auditorName} • Claim ${claimId}`, claimId);
+    closeModal("auditRequestModal");
+    renderAll(false);
+    openAdmin();
+  }
+
+  // ===== ADMIN AUDIT CONTROLS =====
+  function approveAudit(reqId){
+    if(!(isUnlocked() && role()==="Admin")){ alert("Admin only."); return; }
+    const req = state.auditRequests.find(r=>r.id===reqId);
+    if(!req) return;
+    if(req.status!=="Requested"){ alert("Audit not in Requested state."); return; }
+    req.status="Approved";
+    req.approvedAt=nowISO();
+    req.approvedBy=`${getUser().name} (Admin)`;
+    saveState();
+    addLog("Audit approved", `${req.org} • Claim ${req.claimId}`, req.claimId);
+    renderAll(false);
+  }
+
+  function denyAudit(reqId){
+    if(!(isUnlocked() && role()==="Admin")){ alert("Admin only."); return; }
+    const req = state.auditRequests.find(r=>r.id===reqId);
+    if(!req) return;
+    if(!confirm("Deny this audit request?")) return;
+    req.status="Denied";
+    saveState();
+    addLog("Audit denied", `${req.org} • Claim ${req.claimId}`, req.claimId);
+    renderAll(false);
+  }
+
+  function startAudit(reqId){
+    if(!(isUnlocked() && role()==="Admin")){ alert("Admin only."); return; }
+    const req = state.auditRequests.find(r=>r.id===reqId);
+    if(!req) return;
+    if(req.status!=="Approved"){ alert("Audit must be Approved first."); return; }
+    if(state.activeAuditSession){
+      alert("There is already an active audit session. Complete it before starting another.");
+      return;
+    }
+    req.status="In Progress";
+    req.startedAt=nowISO();
+    state.activeAuditSession = { auditRequestId: req.id, claimId: req.claimId, org: req.org, startedAt: req.startedAt };
+    saveState();
+    addLog("Audit started", `${req.org} • Claim ${req.claimId}`, req.claimId);
+    renderAll(false);
+  }
+
+  function completeAudit(reqId){
+    if(!(isUnlocked() && role()==="Admin")){ alert("Admin only."); return; }
+    const req = state.auditRequests.find(r=>r.id===reqId);
+    if(!req) return;
+    if(req.status!=="In Progress"){ alert("Audit must be In Progress first."); return; }
+    if(!confirm("Mark audit completed and terminate access?")) return;
+
+    req.status="Completed";
+    req.completedAt=nowISO();
+    req.completedBy=`${getUser().name} (Admin)`;
+
+    // terminate access session
+    if(state.activeAuditSession && state.activeAuditSession.auditRequestId===req.id){
+      state.activeAuditSession = null;
+    }
+
+    saveState();
+    addLog("Audit completed (access terminated)", `${req.org} • Claim ${req.claimId}`, req.claimId);
+    addLog("Shop notified: audit completed", `Claim ${req.claimId}`, req.claimId);
+    renderAll(false);
+  }
+
   // ===== WORKSPACE PANELS =====
   function renderWorkspace(){
     const c = getClaim(state.currentClaimId);
     if(!c) return;
 
+    // Auditor lock enforcement
+    if(isAuditor()){
+      const lock = auditorClaimLock();
+      if(lock && c.id !== lock){
+        state.currentClaimId = lock;
+        saveState();
+      }
+    }
+
+    const audit = auditForClaim(c.id);
+    document.getElementById("auditStateBadge").textContent = `Audit: ${auditStatusLabel(audit)}`;
+
     document.getElementById("claimSummary").textContent = `${c.id} • ${c.vehicle} • ${c.ro}`;
     document.getElementById("badgeStatus").textContent = `Status: ${c.open ? c.status : "CLOSED"}`;
 
-    // badges
     const authBadge = document.getElementById("authBadge");
     if(c.mpiAuth?.code){
       authBadge.textContent = `MPI Verbal Auth: Recorded (${mask(c.mpiAuth.code)})`;
@@ -826,15 +1059,28 @@
       portalBadge.className = "badge";
     }
 
-    document.getElementById("lockedBadge").textContent = isUnlocked() ? "Edit: Unlocked" : "Edit: Locked";
-    document.getElementById("lockedBadge").className = isUnlocked() ? "badge ok" : "badge danger";
+    document.getElementById("lockedBadge").textContent = isUnlocked() ? (isAuditor() ? "Edit: Read-only" : "Edit: Unlocked") : "Edit: Locked";
+    document.getElementById("lockedBadge").className = isUnlocked() ? (isAuditor() ? "badge info" : "badge ok") : "badge danger";
 
-    // buttons disabled/enabled
+    // buttons
     document.getElementById("btnPortal").disabled = !canOpenPortal();
     document.getElementById("btnAuth").disabled = !(isUnlocked() && (role()==="Estimator"||role()==="Admin"));
     document.getElementById("btnCloseClaim").disabled = !canEditClaim();
+    document.getElementById("btnRequestAudit").disabled = !(isUnlocked() && (role()==="Estimator"||role()==="Admin"));
 
-    // overview panel
+    // Auditor: hide/disable sensitive tabs
+    document.getElementById("tabTech").style.display = isAuditor() ? "none" : "";
+    document.getElementById("tabParts").style.display = isAuditor() ? "none" : "";
+    document.getElementById("tabMaterials").style.display = isAuditor() ? "none" : "";
+
+    // force safe tab if auditor currently on restricted one
+    if(isAuditor() && ["tech","parts","materials"].includes(workspaceTab)){
+      workspaceTab = "overview";
+      setWorkspaceTab("overview");
+      return;
+    }
+
+    // overview panel (MPI scope safe)
     document.getElementById("panel-overview").innerHTML = `
       <div class="item">
         <div class="item-left">
@@ -857,16 +1103,40 @@
         </div>
         <span class="badge ${c.mpiAuth ? "ok":"warn"}">${c.mpiAuth ? "Recorded":"Missing"}</span>
       </div>
+
+      <div class="item">
+        <div class="item-left">
+          <div class="dot ${audit && audit.status!=="None" ? "ok":""}"></div>
+          <div>
+            <div class="item-title">Audit state</div>
+            <div class="item-sub">
+              ${audit ? `${escapeHtml(audit.org)} • ${escapeHtml(audit.status)} • Requested: ${fmt(audit.requestedAt)}` : "No audit request"}
+            </div>
+          </div>
+        </div>
+        <span class="badge info">${escapeHtml(auditStatusLabel(audit))}</span>
+      </div>
     `;
 
-    renderTechPanel(c);
-    renderPartsPanel(c);
-    renderMaterialsPanel(c);
+    // In audit scope, still allow viewing checklist/evidence/audit log
     renderChecklistPanel(c);
     renderEvidencePanel(c);
     renderAuditPanel(c);
+
+    // Non-auditor panels
+    if(!isAuditor()){
+      renderTechPanel(c);
+      renderPartsPanel(c);
+      renderMaterialsPanel(c);
+    } else {
+      // blank out restricted panels to avoid leakage
+      document.getElementById("panel-tech").innerHTML = `<div class="small">Restricted in Audit Mode.</div>`;
+      document.getElementById("panel-parts").innerHTML = `<div class="small">Restricted in Audit Mode.</div>`;
+      document.getElementById("panel-materials").innerHTML = `<div class="small">Restricted in Audit Mode.</div>`;
+    }
   }
 
+  // ===== TECH / PARTS / MATERIALS (same as Pilot V1, but Auditor blocked by UI + permission checks) =====
   function renderTechPanel(c){
     const can = canTechWork() || canEditClaim();
     const html = `
@@ -876,7 +1146,7 @@
         <button class="btn btn-outline" ${can ? "" : "disabled"} onclick="addTechTask()">+ Assign Tech Task</button>
         <button class="btn btn-outline" ${can ? "" : "disabled"} onclick="endTechTask()">End Latest Task</button>
         <button class="btn btn-outline" ${canApproveParts() ? "" : "disabled"} onclick="flagInstallDamage()">Flag Install-Damage (Admin)</button>
-        <button class="btn btn-outline" onclick="addEvidence('Tech')">Add Evidence (Logged)</button>
+        <button class="btn btn-outline" onclick="addEvidence('Tech')" ${isAuditor() ? "disabled" : ""}>Add Evidence (Logged)</button>
       </div>
 
       <div class="hr"></div>
@@ -899,6 +1169,7 @@
 
   function addTechTask(){
     const c = getClaim(state.currentClaimId);
+    if(isAuditor()){ alert("Auditor cannot modify."); return; }
     if(!(canTechWork() || canEditClaim())){ alert("Tech/Admin/Estimator only."); addLog("Blocked: Add tech task","Role restricted"); return; }
     const techName = prompt("Tech name (or initials):");
     if(!techName) return;
@@ -913,6 +1184,7 @@
 
   function endTechTask(){
     const c = getClaim(state.currentClaimId);
+    if(isAuditor()){ alert("Auditor cannot modify."); return; }
     if(!(canTechWork() || canEditClaim())){ alert("Tech/Admin/Estimator only."); addLog("Blocked: End tech task","Role restricted"); return; }
     const active = c.techAssignments.find(t=>!t.endedAt);
     if(!active){ alert("No active task."); return; }
@@ -925,6 +1197,7 @@
 
   function flagInstallDamage(){
     const c = getClaim(state.currentClaimId);
+    if(isAuditor()){ alert("Auditor cannot modify."); return; }
     if(!canApproveParts()){ alert("Admin only."); addLog("Blocked: Install-damage","Role restricted"); return; }
     const active = c.techAssignments.find(t=>!t.endedAt) || c.techAssignments[0];
     if(!active){ alert("No tech task exists."); return; }
@@ -975,6 +1248,7 @@
 
   function addPartRequest(type){
     const c = getClaim(state.currentClaimId);
+    if(isAuditor()){ alert("Auditor cannot modify."); return; }
     if(!isUnlocked()){ alert("Unlock with PIN first."); addLog("Blocked: Add part","Locked"); return; }
     if((type==="Shop Expense Delta" || type==="Install Damage") && !canApproveParts()){
       alert("Admin only."); addLog("Blocked: Add part","Role restricted"); return;
@@ -1000,7 +1274,6 @@
     };
 
     if(type==="Approval Required"){
-      // if claim has auth, tie it; otherwise mark needed
       if(c.mpiAuth?.code) p.mpiAuthMasked = mask(c.mpiAuth.code);
     }
     if(type==="Shop Expense Delta"){
@@ -1016,11 +1289,11 @@
 
   function approvePart(partId){
     const c = getClaim(state.currentClaimId);
+    if(isAuditor()){ alert("Auditor cannot modify."); return; }
     if(!canApproveParts()){ alert("Admin only."); addLog("Blocked: Approve part","Role restricted"); return; }
     const p = c.partsRequests.find(x=>x.id===partId);
     if(!p) return;
 
-    // enforce: approval required needs MPI verbal auth on file
     if(p.type==="Approval Required" && !c.mpiAuth?.code){
       alert("MPI verbal authorization required on the claim first.");
       addLog("Denied part approval", "Missing MPI auth code");
@@ -1045,7 +1318,7 @@
         <button class="btn btn-outline" ${isUnlocked() ? "" : "disabled"} onclick="addMaterialRequest('Vendor Order')">+ Vendor Materials</button>
         <button class="btn btn-outline" ${isUnlocked() ? "" : "disabled"} onclick="addMaterialRequest('From Stock')">+ Materials from Stock</button>
         <button class="btn btn-outline" ${canApproveMaterials() ? "" : "disabled"} onclick="approveMaterial()">Approve Materials (Estimator/Admin)</button>
-        <button class="btn btn-outline" onclick="addEvidence('Materials')">Add Evidence (Logged)</button>
+        <button class="btn btn-outline" onclick="addEvidence('Materials')" ${isAuditor() ? "disabled" : ""}>Add Evidence (Logged)</button>
       </div>
 
       <div class="hr"></div>
@@ -1070,6 +1343,7 @@
 
   function addMaterialRequest(type){
     const c = getClaim(state.currentClaimId);
+    if(isAuditor()){ alert("Auditor cannot modify."); return; }
     if(!isUnlocked()){ alert("Unlock with PIN first."); addLog("Blocked: Add materials","Locked"); return; }
     const item = prompt("Material item (e.g., seam sealer, adhesive, clips):");
     if(!item) return;
@@ -1093,6 +1367,7 @@
 
   function approveMaterial(){
     const c = getClaim(state.currentClaimId);
+    if(isAuditor()){ alert("Auditor cannot modify."); return; }
     if(!canApproveMaterials()){ alert("Estimator/Admin only."); addLog("Blocked: Approve materials","Role restricted"); return; }
     const pending = c.materialsRequests.find(x=>x.status==="Pending");
     if(!pending){ alert("No pending materials request."); return; }
@@ -1103,6 +1378,7 @@
     renderAll(false);
   }
 
+  // ===== CHECKLIST / EVIDENCE / AUDIT LOG (auditor allowed to view) =====
   function renderChecklistPanel(c){
     const total = c.checklist.length;
     const done = c.checklist.filter(x=>x.done).length;
@@ -1136,6 +1412,8 @@
     const total = c.checklist.length;
     const done = c.checklist.filter(x=>x.done).length;
     document.getElementById("checkProgressBadge").textContent = `Progress: ${done}/${total}`;
+    const audit = auditForClaim(c.id);
+    document.getElementById("checkAuditBadge").textContent = `Audit: ${auditStatusLabel(audit)}`;
 
     const el = document.getElementById("checklistItems");
     el.innerHTML = c.checklist.map(it=>`
@@ -1153,7 +1431,7 @@
 
     document.getElementById("btnChecklistPortal").disabled = !canOpenPortal();
     document.getElementById("btnChecklistAuth").disabled = !(isUnlocked() && (role()==="Estimator"||role()==="Admin"));
-    document.getElementById("btnAddEvidence").disabled = !isUnlocked();
+    document.getElementById("btnAddEvidence").disabled = !isUnlocked() || isAuditor();
 
     renderClaimAuditInto("auditLogChecklist");
   }
@@ -1181,10 +1459,10 @@
       </div>
 
       <div class="actions">
-        <button class="btn btn-outline" ${isUnlocked() ? "" : "disabled"} onclick="addEvidence('Evidence')">+ Add Evidence Entry</button>
-        <button class="btn btn-outline" ${isUnlocked() ? "" : "disabled"} onclick="tagEvidenceToChecklist()">Tag Evidence to Checklist</button>
+        <button class="btn btn-outline" ${isUnlocked() && !isAuditor() ? "" : "disabled"} onclick="addEvidence('Evidence')">+ Add Evidence Entry</button>
+        <button class="btn btn-outline" ${isUnlocked() && !isAuditor() ? "" : "disabled"} onclick="tagEvidenceToChecklist()">Tag Evidence to Checklist</button>
         <button class="btn btn-outline" onclick="openChecklist()">Open Checklist</button>
-        <button class="btn btn-outline" onclick="exportDataJSON()">Export Data (JSON)</button>
+        <button class="btn btn-outline" onclick="exportDataJSON()" ${canExport() ? "" : "disabled"}>Export Data (JSON)</button>
       </div>
 
       <div class="hr"></div>
@@ -1225,6 +1503,7 @@
   function tagEvidenceToChecklist(){
     const c = getClaim(state.currentClaimId);
     if(!isUnlocked()){ alert("Unlock with PIN first."); return; }
+    if(role()==="Auditor"){ alert("Auditor cannot modify."); return; }
     if(c.evidence.length===0){ alert("No evidence to tag yet."); return; }
     const key = prompt("Enter checklist key to tag (estimate/approvals/verbal/pre/post):");
     if(!key) return;
@@ -1241,9 +1520,9 @@
     document.getElementById("panel-audit").innerHTML = `
       <div class="small">Append-only style audit log (pilot stored locally). Includes time/date, user, role, claim.</div>
       <div class="actions">
-        <button class="btn btn-outline" onclick="exportLogsCSV()">Export Logs (CSV)</button>
-        <button class="btn btn-outline" onclick="exportDataJSON()">Export Data (JSON)</button>
-        <button class="btn btn-outline" onclick="openAdmin()">Admin</button>
+        <button class="btn btn-outline" onclick="exportLogsCSV()" ${canExport() ? "" : "disabled"}>Export Logs (CSV)</button>
+        <button class="btn btn-outline" onclick="exportDataJSON()" ${canExport() ? "" : "disabled"}>Export Data (JSON)</button>
+        <button class="btn btn-outline" onclick="openAdmin()" ${role()==="Admin" ? "" : "disabled"}>Admin</button>
         <button class="btn btn-primary" onclick="openDashboard()">Dashboard</button>
       </div>
       <div class="log">
@@ -1256,12 +1535,161 @@
 
   function renderClaimAuditInto(targetId){
     const cId = state.currentClaimId;
-    const list = state.auditLog.filter(x=>x.claimId===cId).slice(0,20);
+    const list = state.auditLog.filter(x=>x.claimId===cId).slice(0,25);
     document.getElementById(targetId).innerHTML = renderLogHTML(list);
+  }
+
+  // ===== AUDIT HOME (new) =====
+  // Adds a simple, safe page for auditors and shop staff to see audit state.
+  const auditHomeCardHTML = `
+    <div class="card hidden" id="auditHomeCard">
+      <h3 class="section-title">Audit Mode (MPI-first)</h3>
+      <div class="small">
+        Auditor is claim-scoped and read-only. Admin controls approval/start/complete. Access is terminated when audit is completed.
+      </div>
+      <div class="badge-row" id="auditHomeBadges"></div>
+
+      <div class="hr"></div>
+
+      <div id="auditHomeContent"></div>
+
+      <div class="actions">
+        <button class="btn btn-primary" onclick="openClaim()">Open Claim</button>
+        <button class="btn btn-outline" onclick="openChecklist()">Checklist</button>
+        <button class="btn btn-outline" onclick="openDashboard()">Dashboard</button>
+        <button class="btn btn-outline" onclick="openAdmin()" id="btnAuditHomeAdmin">Admin</button>
+      </div>
+    </div>
+  `;
+  // Inject Audit Home card into DOM
+  (function injectAuditHome(){
+    const container = document.querySelector(".container");
+    const temp = document.createElement("div");
+    temp.innerHTML = auditHomeCardHTML;
+    container.insertBefore(temp.firstElementChild, container.querySelector("footer"));
+  })();
+
+  function renderAuditHome(){
+    const badges = document.getElementById("auditHomeBadges");
+    const content = document.getElementById("auditHomeContent");
+    badges.innerHTML = "";
+    content.innerHTML = "";
+
+    document.getElementById("btnAuditHomeAdmin").disabled = !(isUnlocked() && role()==="Admin");
+
+    if(!isUnlocked()){
+      badges.innerHTML = `<span class="badge warn">Locked: unlock with PIN to view audit details</span>`;
+      return;
+    }
+
+    if(isAuditor()){
+      const lock = auditorClaimLock();
+      if(!lock){
+        badges.innerHTML = `<span class="badge warn">No active audit session. Admin must start audit.</span>`;
+        content.innerHTML = `<div class="small">Ask the shop Admin to approve and start the audit request for you.</div>`;
+        return;
+      }
+      const req = state.auditRequests.find(r=>r.id===state.activeAuditSession.auditRequestId);
+      badges.innerHTML = `
+        <span class="badge info">AUDITOR SESSION ACTIVE</span>
+        <span class="badge">Org: ${escapeHtml(req?.org || "—")}</span>
+        <span class="badge">Claim: ${escapeHtml(lock)}</span>
+        <span class="badge ok">Read-only</span>
+      `;
+      content.innerHTML = `
+        <div class="item">
+          <div class="item-left">
+            <div class="dot ok"></div>
+            <div>
+              <div class="item-title">Audit Scope</div>
+              <div class="item-sub">${escapeHtml(req?.scope || "MPI compliance audit (pilot)")}</div>
+              <div class="item-sub">Started: ${req?.startedAt ? fmt(req.startedAt) : "—"}</div>
+            </div>
+          </div>
+          <span class="badge info">${escapeHtml(req?.status || "In Progress")}</span>
+        </div>
+        <div class="small" style="margin-top:10px;">
+          Auditor can view: Overview • Checklist • Evidence • Audit Log. No edits permitted.
+        </div>
+      `;
+      return;
+    }
+
+    // staff view
+    const active = state.activeAuditSession;
+    if(active){
+      badges.innerHTML = `
+        <span class="badge info">Active Audit Session</span>
+        <span class="badge">Org: ${escapeHtml(active.org)}</span>
+        <span class="badge">Claim: ${escapeHtml(active.claimId)}</span>
+        <span class="badge">Started: ${fmt(active.startedAt)}</span>
+      `;
+    } else {
+      badges.innerHTML = `<span class="badge">No active audit session</span>`;
+    }
+
+    // show pending requests summary
+    const requested = state.auditRequests.filter(r=>r.status==="Requested").length;
+    const approved = state.auditRequests.filter(r=>r.status==="Approved").length;
+    const inprog = state.auditRequests.filter(r=>r.status==="In Progress").length;
+    const completed = state.auditRequests.filter(r=>r.status==="Completed").length;
+
+    content.innerHTML = `
+      <div class="item">
+        <div class="item-left">
+          <div class="dot ok"></div>
+          <div>
+            <div class="item-title">Audit request summary</div>
+            <div class="item-sub">Requested: ${requested} • Approved: ${approved} • In Progress: ${inprog} • Completed: ${completed}</div>
+            <div class="item-sub">Use Admin panel to approve/start/complete audits.</div>
+          </div>
+        </div>
+        <span class="badge info">Enterprise-ready</span>
+      </div>
+    `;
   }
 
   // ===== ADMIN RENDER =====
   function renderAdmin(){
+    // Audit requests list
+    const ar = document.getElementById("auditRequestsList");
+    if(!(isUnlocked() && role()==="Admin")){
+      ar.innerHTML = `<div class="small">Admin only. Unlock as Admin to manage audit requests.</div>`;
+    } else {
+      if(state.auditRequests.length===0){
+        ar.innerHTML = `<div class="small">No audit requests yet. Request one from a claim workspace.</div>`;
+      } else {
+        ar.innerHTML = state.auditRequests.map(r=>{
+          const controls = (r.status==="Requested")
+            ? `<button class="btn btn-outline" onclick="approveAudit('${r.id}')">Approve</button>
+               <button class="btn btn-danger" onclick="denyAudit('${r.id}')">Deny</button>`
+            : (r.status==="Approved")
+              ? `<button class="btn btn-primary" onclick="startAudit('${r.id}')">Start Audit</button>`
+              : (r.status==="In Progress")
+                ? `<button class="btn btn-danger" onclick="completeAudit('${r.id}')">Complete & Terminate</button>`
+                : `<span class="badge ok">No action</span>`;
+
+          return `
+            <div class="item">
+              <div class="item-left">
+                <div class="dot ok"></div>
+                <div>
+                  <div class="item-title">${escapeHtml(r.org)} Audit • <span class="badge">${escapeHtml(r.status)}</span></div>
+                  <div class="item-sub">Claim: ${escapeHtml(r.claimId)} • Auditor: ${escapeHtml(r.auditorName)}</div>
+                  <div class="item-sub">Requested: ${fmt(r.requestedAt)} by ${escapeHtml(r.requestedBy)}</div>
+                  ${r.scope ? `<div class="item-sub"><b>Scope:</b> ${escapeHtml(r.scope)}</div>` : ""}
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+                ${controls}
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+    }
+
+    // Users
     const ul = document.getElementById("userList");
     ul.innerHTML = state.users.map(u=>`
       <div class="item">
@@ -1276,16 +1704,14 @@
       </div>
     `).join("");
 
-    document.getElementById("auditLogAdmin").innerHTML = renderLogHTML(state.auditLog.slice(0,25));
+    document.getElementById("auditLogAdmin").innerHTML = renderLogHTML(state.auditLog.slice(0,30));
   }
 
   function rotatePins(){
     if(!(isUnlocked() && role()==="Admin")){
       alert("Admin only."); addLog("Blocked: Rotate PINs","Role restricted"); return;
     }
-    state.users.forEach(u=>{
-      u.pin = String(Math.floor(1000 + Math.random()*9000));
-    });
+    state.users.forEach(u=>{ u.pin = String(Math.floor(1000 + Math.random()*9000)); });
     saveState();
     addLog("Rotated all PINs");
     populateUserSelect();
@@ -1303,11 +1729,7 @@
 
   // ===== EXPORTS =====
   function exportLogsCSV(){
-    if(!isUnlocked()){ alert("Unlock with PIN first."); return; }
-    // Accountant/Admin friendly in pilot
-    if(!(role()==="Admin" || role()==="Accountant" || role()==="Estimator")){
-      alert("Export limited to Estimator/Admin/Accountant in pilot."); addLog("Blocked: Export logs","Role restricted"); return;
-    }
+    if(!canExport()){ alert("Export limited to Estimator/Admin/Accountant in pilot."); addLog("Blocked: Export logs","Role restricted"); return; }
     const rows = [["timestamp","user","role","claimId","action","details"]];
     state.auditLog.slice().reverse().forEach(x=>{
       rows.push([x.at, x.userName, x.role, x.claimId, x.action, x.details]);
@@ -1318,16 +1740,15 @@
   }
 
   function exportDataJSON(){
-    if(!isUnlocked()){ alert("Unlock with PIN first."); return; }
-    if(!(role()==="Admin" || role()==="Accountant" || role()==="Estimator")){
-      alert("Export limited to Estimator/Admin/Accountant in pilot."); addLog("Blocked: Export data","Role restricted"); return;
-    }
+    if(!canExport()){ alert("Export limited to Estimator/Admin/Accountant in pilot."); addLog("Blocked: Export data","Role restricted"); return; }
     const payload = {
       exportedAt: nowISO(),
       product: "One Stop Compliance – RepairScope Platform",
       confidential: true,
-      users: state.users.map(u=>({id:u.id,name:u.name,role:u.role,enabled:u.enabled})), // exclude pins
+      users: state.users.map(u=>({id:u.id,name:u.name,role:u.role,enabled:u.enabled})),
       claims: state.claims,
+      auditRequests: state.auditRequests,
+      activeAuditSession: state.activeAuditSession,
       auditLog: state.auditLog
     };
     downloadText(`OSC_PilotData_${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(payload, null, 2));
@@ -1349,6 +1770,7 @@
   function closeModal(id){ document.getElementById(id).classList.add("hidden"); }
   document.getElementById("authModal").addEventListener("click", e=>{ if(e.target.id==="authModal") closeModal("authModal"); });
   document.getElementById("createClaimModal").addEventListener("click", e=>{ if(e.target.id==="createClaimModal") closeModal("createClaimModal"); });
+  document.getElementById("auditRequestModal").addEventListener("click", e=>{ if(e.target.id==="auditRequestModal") closeModal("auditRequestModal"); });
 
   function escapeHtml(str){
     return String(str??"")
@@ -1372,33 +1794,35 @@
   }
 
   // ===== MAIN RENDER =====
-  function renderAll(withStatus){
+  function renderAll(){
     populateUserSelect();
     renderClaimSelect();
     renderKPIs();
+    renderAuditBanner();
     renderDashboardClaims();
 
     // who am I
     const u = getUser();
     document.getElementById("whoUser").textContent = u ? u.name : "—";
     document.getElementById("whoRole").textContent = u ? u.role : "—";
-    document.getElementById("loginStatus").textContent = isUnlocked() ? "UNLOCKED" : "LOCKED";
+    document.getElementById("loginStatus").textContent = isUnlocked() ? (isAuditor() ? "AUDIT (READ-ONLY)" : "UNLOCKED") : "LOCKED";
 
-    // locks
-    const locked = !isUnlocked();
-    document.getElementById("claimSelect").disabled = locked;
-    // allow viewing dashboard even locked, but disable edits
-    // render logs
+    // lock down New Claim button for auditor
+    document.getElementById("btnNewClaim").disabled = isAuditor() || !canEditClaim();
+
+    // dashboard log
     document.getElementById("auditLogDash").innerHTML = renderLogHTML(state.auditLog.slice(0,14));
 
     if(!document.getElementById("claimsCard").classList.contains("hidden")) renderWorkspace();
     if(!document.getElementById("checklistCard").classList.contains("hidden")) renderChecklist();
     if(!document.getElementById("adminCard").classList.contains("hidden")) renderAdmin();
+    if(!document.getElementById("auditHomeCard").classList.contains("hidden")) renderAuditHome();
+
     saveState();
   }
 
   // ===== INIT =====
-  renderAll(true);
+  renderAll();
   openDashboard();
 </script>
 </body>
