@@ -14,6 +14,8 @@
         --border: #e6e6e6;
         --shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
         --pill: #f2f2f2;
+        --danger: #b42318;
+        --ok: #067647;
       }
 
       * { box-sizing: border-box; }
@@ -28,7 +30,7 @@
         max-width: 900px;
         margin: 0 auto;
         padding: 16px;
-        padding-bottom: 88px; /* room for bottom nav */
+        padding-bottom: 104px; /* room for bottom nav */
       }
 
       .topbar {
@@ -135,6 +137,7 @@
         border-radius: 16px;
         padding: 12px;
         background: #fff;
+        cursor: pointer;
       }
       .claim:active { transform: scale(0.99); }
       .claim-row {
@@ -143,9 +146,7 @@
         justify-content: space-between;
         gap: 10px;
       }
-      .claim-id {
-        font-weight: 800;
-      }
+      .claim-id { font-weight: 800; }
       .claim-muted {
         font-size: 12px;
         color: var(--muted);
@@ -180,17 +181,16 @@
         font-weight: 800;
         cursor: pointer;
       }
-      .btn-primary {
-        background: #111;
-        color: #fff;
-      }
-      .btn-outline {
-        background: #fff;
-        border: 1px solid var(--border);
-        color: #111;
-      }
-
+      .btn-primary { background: #111; color: #fff; }
+      .btn-outline { background: #fff; border: 1px solid var(--border); color: #111; }
+      .btn-danger { background: var(--danger); color: #fff; }
       .hidden { display: none !important; }
+
+      .tiny {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 10px;
+      }
 
       /* Bottom nav (mobile friendly) */
       .bottom-nav {
@@ -219,10 +219,7 @@
         font-size: 12px;
         color: #222;
       }
-      .nav-btn.active {
-        background: #111;
-        color: #fff;
-      }
+      .nav-btn.active { background: #111; color: #fff; }
 
       footer {
         margin-top: 18px;
@@ -233,11 +230,104 @@
         text-align: center;
       }
 
-      .tiny {
+      /* Modal */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.45);
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 10px;
+        z-index: 9999;
+      }
+      @media (min-width: 720px) {
+        .modal-overlay { align-items: center; }
+      }
+      .modal {
+        width: 100%;
+        max-width: 560px;
+        background: #fff;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+        overflow: hidden;
+      }
+      .modal-header {
+        padding: 14px 14px 10px 14px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+      .modal-title {
+        font-size: 16px;
+        font-weight: 900;
+      }
+      .modal-close {
+        border: 0;
+        background: #fff;
+        border-radius: 12px;
+        padding: 8px 10px;
+        font-weight: 900;
+        cursor: pointer;
+      }
+      .modal-body { padding: 14px; }
+      .field-label {
+        font-size: 12px;
+        font-weight: 800;
+        margin-bottom: 6px;
+      }
+      .input {
+        width: 100%;
+        padding: 12px 12px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        font-size: 14px;
+      }
+      .help {
         font-size: 12px;
         color: var(--muted);
-        margin-top: 10px;
+        margin-top: 8px;
+        line-height: 1.35;
       }
+      .modal-footer {
+        padding: 12px 14px 14px 14px;
+        border-top: 1px solid var(--border);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .badge-row {
+        margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .badge {
+        font-size: 12px;
+        font-weight: 900;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 6px 10px;
+        background: #fff;
+      }
+      .badge.ok { border-color: rgba(6,118,71,0.35); background: rgba(6,118,71,0.08); color: var(--ok); }
+      .badge.warn { border-color: rgba(180,35,24,0.35); background: rgba(180,35,24,0.08); color: var(--danger); }
+
+      .log {
+        margin-top: 10px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 10px;
+        background: #fff;
+      }
+      .log-title { font-size: 12px; font-weight: 900; margin-bottom: 6px; }
+      .log-item { font-size: 12px; color: #222; padding: 6px 0; border-top: 1px dashed #eee; }
+      .log-item:first-child { border-top: 0; }
+      .log-time { color: var(--muted); font-size: 11px; }
     </style>
   </head>
 
@@ -246,7 +336,7 @@
       <!-- HEADER / BRAND -->
       <div class="topbar">
         <div class="brand">
-          <!-- ✅ YOUR LOGO: make sure Onestop7.png is in the SAME folder as index.html -->
+          <!-- ✅ YOUR LOGO: must be same folder as index.html -->
           <img
             src="Onestop7.png"
             alt="One Stop Compliance – RepairScope Platform"
@@ -335,24 +425,42 @@
         </div>
       </div>
 
-      <!-- CLAIMS VIEW (simple placeholder for now) -->
+      <!-- CLAIMS VIEW -->
       <div class="card hidden" id="claimsCard">
-        <h3 class="section-title">Claims (Demo)</h3>
-        <div style="color:#444; font-size:14px;">
-          This is a pilot demo shell. Next we’ll expand this into full claims, MPI checklist, approvals, parts/materials and audit readiness.
+        <h3 class="section-title">Claims (Pilot Demo)</h3>
+
+        <div class="badge-row">
+          <span class="badge warn" id="authBadge">MPI Verbal Auth: Not recorded</span>
+          <span class="badge" id="portalBadge">MPI Portal: Not opened</span>
         </div>
 
         <div class="actions">
           <button class="btn btn-primary" onclick="openDashboard()">Back to Dashboard</button>
-          <button class="btn btn-outline" onclick="alert('Demo: In production this would open the MPI checklist + evidence upload.')">Open Checklist</button>
+
+          <button class="btn btn-outline" onclick="openMPIPortal()">
+            Open MPI Portal
+          </button>
+
+          <button class="btn btn-outline" onclick="openAuthModal()">
+            Enter MPI Authorization Code
+          </button>
+
+          <button class="btn btn-outline" onclick="openChecklist()">
+            Open Checklist
+          </button>
+        </div>
+
+        <div class="log" id="auditLogBox">
+          <div class="log-title">Audit Log (Demo Preview)</div>
+          <div id="auditLog"></div>
         </div>
 
         <div class="tiny">
-          Note: This demo contains no real customer or MPI data.
+          Compliance note: MPI credentials are never stored or accessed by this platform. Portal opens in a separate session.
         </div>
       </div>
 
-      <!-- CHECKLIST VIEW (simple placeholder for now) -->
+      <!-- CHECKLIST VIEW -->
       <div class="card hidden" id="checklistCard">
         <h3 class="section-title">MPI Checklist (Demo)</h3>
         <div style="color:#444; font-size:14px;">
@@ -361,6 +469,8 @@
 
         <div class="actions">
           <button class="btn btn-primary" onclick="openDashboard()">Back to Dashboard</button>
+          <button class="btn btn-outline" onclick="openAuthModal()">Enter MPI Authorization Code</button>
+          <button class="btn btn-outline" onclick="openMPIPortal()">Open MPI Portal</button>
           <button class="btn btn-outline" onclick="alert('Demo: This would add tagged evidence and log the action with time/date.')">Add Evidence</button>
         </div>
 
@@ -369,7 +479,7 @@
         </div>
       </div>
 
-      <!-- ADMIN VIEW (simple placeholder for now) -->
+      <!-- ADMIN VIEW -->
       <div class="card hidden" id="adminCard">
         <h3 class="section-title">Admin: Security & Audits (Demo)</h3>
         <div style="color:#444; font-size:14px;">
@@ -379,6 +489,8 @@
         <div class="actions">
           <button class="btn btn-primary" onclick="openDashboard()">Back to Dashboard</button>
           <button class="btn btn-outline" onclick="alert('Demo: Audit Completed would invalidate access and notify the shop.')">Audit Completed</button>
+          <button class="btn btn-outline" onclick="openMPIPortal()">Open MPI Portal</button>
+          <button class="btn btn-outline" onclick="openAuthModal()">Enter MPI Authorization Code</button>
         </div>
       </div>
 
@@ -390,23 +502,86 @@
       </footer>
     </div>
 
-    <!-- BOTTOM NAV -->
-    <div class="bottom-nav">
-      <div class="bottom-nav-inner">
-        <button id="navDashboard" class="nav-btn active" onclick="openDashboard()">Dashboard</button>
-        <button id="navClaims" class="nav-btn" onclick="openClaims()">Claims</button>
-        <button id="navChecklist" class="nav-btn" onclick="openChecklist()">Checklist</button>
-        <button id="navAdmin" class="nav-btn" onclick="openAdmin()">Admin</button>
+    <!-- AUTH MODAL -->
+    <div class="modal-overlay hidden" id="authModal" role="dialog" aria-modal="true" aria-label="MPI Authorization Code">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <div class="modal-title">MPI Verbal Authorization</div>
+            <div class="confidential">Record the authorization code for audit trail.</div>
+          </div>
+          <button class="modal-close" onclick="closeAuthModal()">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="field-label">MPI representative name</div>
+          <input id="mpiRep" class="input" placeholder="e.g., Jane Doe" />
+
+          <div style="height:12px;"></div>
+
+          <div class="field-label">Authorization code</div>
+          <input id="mpiAuthCode" class="input" placeholder="Enter code provided by MPI" />
+
+          <div style="height:12px;"></div>
+
+          <div class="field-label">Notes (optional)</div>
+          <input id="mpiAuthNotes" class="input" placeholder="What was approved? (part, cost, reason)" />
+
+          <div class="help">
+            This records the code inside One Stop Compliance and logs the action with time/date.
+            MPI credentials are not stored. For portal access, use the “Open MPI Portal” button.
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-outline" onclick="closeAuthModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveAuthCode()">Save</button>
+        </div>
       </div>
     </div>
 
     <script>
-      // Timestamps for demo
+      // --- Demo timestamps ---
       const now = Date.now();
       document.getElementById("t1").textContent = new Date(now - 1000 * 60 * 18).toLocaleString();
       document.getElementById("t2").textContent = new Date(now - 1000 * 60 * 75).toLocaleString();
       document.getElementById("t3").textContent = new Date(now - 1000 * 60 * 9).toLocaleString();
 
+      // --- MPI portal URL (UPDATED) ---
+      const MPI_PORTAL_URL = "https://mpipartners.ca/Login.aspx";
+
+      // --- Simple demo state (stored locally) ---
+      const STORAGE_KEY = "osc_demo_state_v1";
+      const state = loadState();
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return { mpiPortalOpenedAt: null, mpiAuth: null, auditLog: [] };
+          return JSON.parse(raw);
+        } catch {
+          return { mpiPortalOpenedAt: null, mpiAuth: null, auditLog: [] };
+        }
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function addLog(action, details) {
+        const item = {
+          at: new Date().toISOString(),
+          action,
+          details: details || ""
+        };
+        state.auditLog.unshift(item);
+        state.auditLog = state.auditLog.slice(0, 12); // keep it short for demo
+        saveState();
+        renderBadges();
+        renderLog();
+      }
+
+      // --- Navigation ---
       function setActiveNav(which) {
         const ids = ["navDashboard", "navClaims", "navChecklist", "navAdmin"];
         ids.forEach((id) => document.getElementById(id).classList.remove("active"));
@@ -420,28 +595,139 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
-      function openDashboard() {
-        setActiveNav("navDashboard");
-        showOnly("dashboardCard");
+      function openDashboard() { setActiveNav("navDashboard"); showOnly("dashboardCard"); addLog("Viewed Dashboard"); }
+      function openClaims() { setActiveNav("navClaims"); showOnly("claimsCard"); addLog("Viewed Claims"); }
+      function openChecklist() { setActiveNav("navChecklist"); showOnly("checklistCard"); addLog("Viewed MPI Checklist"); }
+      function openAdmin() { setActiveNav("navAdmin"); showOnly("adminCard"); addLog("Viewed Admin"); }
+
+      // --- MPI Portal Button (safe outbound link) ---
+      function openMPIPortal() {
+        const confirmAccess = confirm(
+          "You are about to leave One Stop Compliance and access the MPI system.\n\n" +
+          "MPI credentials are not stored or accessed by this platform.\n" +
+          "This action will be logged for audit purposes.\n\n" +
+          "Continue?"
+        );
+
+        if (!confirmAccess) return;
+
+        window.open(MPI_PORTAL_URL, "_blank", "noopener,noreferrer");
+        state.mpiPortalOpenedAt = new Date().toISOString();
+        saveState();
+        addLog("Opened MPI Portal", MPI_PORTAL_URL);
       }
 
-      function openClaims() {
-        setActiveNav("navClaims");
-        showOnly("claimsCard");
+      // --- MPI Authorization Modal ---
+      function openAuthModal() {
+        document.getElementById("authModal").classList.remove("hidden");
+        document.getElementById("mpiRep").focus();
+        addLog("Opened MPI Authorization modal");
       }
 
-      function openChecklist() {
-        setActiveNav("navChecklist");
-        showOnly("checklistCard");
+      function closeAuthModal() {
+        document.getElementById("authModal").classList.add("hidden");
+        addLog("Closed MPI Authorization modal");
       }
 
-      function openAdmin() {
-        setActiveNav("navAdmin");
-        showOnly("adminCard");
+      function saveAuthCode() {
+        const rep = document.getElementById("mpiRep").value.trim();
+        const code = document.getElementById("mpiAuthCode").value.trim();
+        const notes = document.getElementById("mpiAuthNotes").value.trim();
+
+        if (!code) {
+          alert("Please enter the MPI authorization code.");
+          return;
+        }
+
+        state.mpiAuth = {
+          rep: rep || "MPI Rep (not entered)",
+          code,
+          notes: notes || "",
+          at: new Date().toISOString()
+        };
+
+        saveState();
+        addLog("Saved MPI Authorization Code", `Rep: ${state.mpiAuth.rep} • Code: ${mask(code)}`);
+        closeAuthModal();
       }
 
-      // Ensure we start on dashboard
+      function mask(code) {
+        // show last 3 chars only (demo-friendly privacy)
+        if (!code) return "";
+        const s = String(code);
+        if (s.length <= 3) return "***";
+        return "*".repeat(Math.max(3, s.length - 3)) + s.slice(-3);
+      }
+
+      // --- Render badges + audit log ---
+      function renderBadges() {
+        const authBadge = document.getElementById("authBadge");
+        const portalBadge = document.getElementById("portalBadge");
+
+        if (state.mpiAuth && state.mpiAuth.code) {
+          authBadge.textContent = `MPI Verbal Auth: Recorded (${mask(state.mpiAuth.code)})`;
+          authBadge.classList.remove("warn");
+          authBadge.classList.add("ok");
+        } else {
+          authBadge.textContent = "MPI Verbal Auth: Not recorded";
+          authBadge.classList.add("warn");
+          authBadge.classList.remove("ok");
+        }
+
+        if (state.mpiPortalOpenedAt) {
+          portalBadge.textContent = `MPI Portal: Opened (${new Date(state.mpiPortalOpenedAt).toLocaleString()})`;
+          portalBadge.classList.add("ok");
+        } else {
+          portalBadge.textContent = "MPI Portal: Not opened";
+          portalBadge.classList.remove("ok");
+        }
+      }
+
+      function renderLog() {
+        const el = document.getElementById("auditLog");
+        if (!state.auditLog || state.auditLog.length === 0) {
+          el.innerHTML = `<div class="log-item"><div>No events yet.</div><div class="log-time">Actions will appear here.</div></div>`;
+          return;
+        }
+
+        el.innerHTML = state.auditLog
+          .map((x) => {
+            const t = new Date(x.at).toLocaleString();
+            const d = x.details ? ` • ${escapeHtml(x.details)}` : "";
+            return `<div class="log-item"><div><b>${escapeHtml(x.action)}</b>${d}</div><div class="log-time">${t}</div></div>`;
+          })
+          .join("");
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll("\"", "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      // --- Init ---
+      renderBadges();
+      renderLog();
       openDashboard();
+
+      // Close modal if user taps outside it (mobile-friendly)
+      document.getElementById("authModal").addEventListener("click", function(e) {
+        if (e.target === this) closeAuthModal();
+      });
     </script>
+
+    <!-- BOTTOM NAV -->
+    <div class="bottom-nav">
+      <div class="bottom-nav-inner">
+        <button id="navDashboard" class="nav-btn active" onclick="openDashboard()">Dashboard</button>
+        <button id="navClaims" class="nav-btn" onclick="openClaims()">Claims</button>
+        <button id="navChecklist" class="nav-btn" onclick="openChecklist()">Checklist</button>
+        <button id="navAdmin" class="nav-btn" onclick="openAdmin()">Admin</button>
+      </div>
+    </div>
   </body>
 </html>
+```0
