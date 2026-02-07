@@ -1,733 +1,1405 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>One Stop Compliance – RepairScope Platform (Confidential Pilot)</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>One Stop Compliance – RepairScope Platform (Confidential Pilot)</title>
+  <style>
+    :root{
+      --bg:#fafafa; --card:#fff; --text:#111; --muted:#666; --border:#e6e6e6;
+      --shadow:0 1px 0 rgba(0,0,0,.03); --pill:#f2f2f2;
+      --danger:#b42318; --ok:#067647; --warn:#b54708; --info:#175cd3;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .container{max-width:1060px;margin:0 auto;padding:16px;padding-bottom:130px}
 
-    <style>
-      :root {
-        --bg: #fafafa;
-        --card: #ffffff;
-        --text: #111111;
-        --muted: #666666;
-        --border: #e6e6e6;
-        --shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
-        --pill: #f2f2f2;
-        --danger: #b42318;
-        --ok: #067647;
-      }
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border:1px solid var(--border);border-radius:18px;background:var(--card);box-shadow:var(--shadow)}
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .brand img{height:56px;width:auto;object-fit:contain;display:block}
+    .brand-text{min-width:0}
+    .confidential{font-size:12px;color:var(--muted)}
+    .title{font-size:22px;font-weight:950;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:560px}
+    .subtitle{font-size:14px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:560px}
+    .pill{font-size:12px;font-weight:950;padding:6px 10px;border-radius:999px;border:1px solid var(--border);background:var(--pill);white-space:nowrap}
 
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-        background: var(--bg);
-        color: var(--text);
-      }
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:12px}
+    .row-left{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .small{font-size:12px;color:var(--muted)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
 
-      .container {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 16px;
-        padding-bottom: 104px; /* room for bottom nav */
-      }
+    .select,.input{
+      border:1px solid var(--border); background:#fff; border-radius:14px;
+      padding:10px 12px; font-weight:900; font-size:13px;
+    }
+    .input{font-weight:700;font-size:14px}
 
-      .topbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        padding: 14px;
-        border: 1px solid var(--border);
-        border-radius: 18px;
-        background: var(--card);
-        box-shadow: var(--shadow);
-      }
+    .grid{display:grid;gap:12px;margin-top:14px}
+    .grid.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+    @media(min-width:820px){.grid.kpis{grid-template-columns:repeat(5,minmax(0,1fr))}}
 
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        min-width: 0;
-      }
+    .card{border:1px solid var(--border);border-radius:18px;background:var(--card);box-shadow:var(--shadow);padding:14px}
+    .kpi-label{font-size:12px;color:var(--muted)}
+    .kpi-value{font-size:24px;font-weight:950;margin-top:2px}
+    .section-title{font-size:14px;font-weight:950;margin:0 0 10px 0}
 
-      .brand img {
-        height: 56px;
-        width: auto;
-        object-fit: contain;
-        display: block;
-      }
+    .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+    @media(min-width:820px){.actions{grid-template-columns:repeat(4,minmax(0,1fr))}}
+    .btn{border:0;border-radius:16px;padding:12px 14px;font-weight:950;cursor:pointer}
+    .btn-primary{background:#111;color:#fff}
+    .btn-outline{background:#fff;border:1px solid var(--border);color:#111}
+    .btn-danger{background:var(--danger);color:#fff}
+    .btn:disabled{opacity:.45;cursor:not-allowed}
 
-      .brand-text { min-width: 0; }
-      .confidential {
-        font-size: 12px;
-        color: var(--muted);
-      }
-      .title {
-        font-size: 22px;
-        font-weight: 800;
-        line-height: 1.1;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 520px;
-      }
-      .subtitle {
-        font-size: 14px;
-        color: var(--muted);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 520px;
-      }
+    .hidden{display:none!important}
 
-      .pill {
-        font-size: 12px;
-        font-weight: 800;
-        padding: 6px 10px;
-        border-radius: 999px;
-        border: 1px solid var(--border);
-        background: var(--pill);
-        white-space: nowrap;
-      }
+    .badge-row{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}
+    .badge{font-size:12px;font-weight:950;border:1px solid var(--border);border-radius:999px;padding:6px 10px;background:#fff}
+    .badge.ok{border-color:rgba(6,118,71,.35);background:rgba(6,118,71,.08);color:var(--ok)}
+    .badge.warn{border-color:rgba(181,71,8,.35);background:rgba(181,71,8,.08);color:var(--warn)}
+    .badge.danger{border-color:rgba(180,35,24,.35);background:rgba(180,35,24,.08);color:var(--danger)}
+    .badge.info{border-color:rgba(23,92,211,.35);background:rgba(23,92,211,.08);color:var(--info)}
 
-      .grid {
-        display: grid;
-        gap: 12px;
-        margin-top: 14px;
-      }
-      .grid.kpis {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      @media (min-width: 720px) {
-        .grid.kpis {
-          grid-template-columns: repeat(4, minmax(0, 1fr));
-        }
-      }
+    .claim{width:100%;text-align:left;border:1px solid var(--border);border-radius:16px;padding:12px;background:#fff;cursor:pointer}
+    .claim:active{transform:scale(.99)}
+    .claim-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .claim-id{font-weight:950}
+    .claim-muted{font-size:12px;color:var(--muted);margin-top:2px}
+    .claim-next{font-size:13px;margin-top:8px;color:#222}
+    .status{font-size:11px;font-weight:950;border:1px solid var(--border);border-radius:999px;padding:6px 10px;background:var(--pill);white-space:nowrap}
 
-      .card {
-        border: 1px solid var(--border);
-        border-radius: 18px;
-        background: var(--card);
-        box-shadow: var(--shadow);
-        padding: 14px;
-      }
+    .log{margin-top:10px;border:1px solid var(--border);border-radius:14px;padding:10px;background:#fff}
+    .log-title{font-size:12px;font-weight:950;margin-bottom:6px}
+    .log-item{font-size:12px;color:#222;padding:8px 0;border-top:1px dashed #eee}
+    .log-item:first-child{border-top:0}
+    .log-time{color:var(--muted);font-size:11px;margin-top:2px}
 
-      .kpi-label {
-        font-size: 12px;
-        color: var(--muted);
-      }
-      .kpi-value {
-        font-size: 26px;
-        font-weight: 900;
-        margin-top: 2px;
-      }
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .tab{border:1px solid var(--border);background:#fff;border-radius:999px;padding:8px 10px;font-weight:950;font-size:12px;cursor:pointer}
+    .tab.active{background:#111;color:#fff;border-color:#111}
 
-      .section-title {
-        font-size: 14px;
-        font-weight: 800;
-        margin: 0 0 10px 0;
-      }
+    .panel{margin-top:10px}
+    .hr{height:1px;background:#eee;margin:12px 0}
 
-      .claim {
-        width: 100%;
-        text-align: left;
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 12px;
-        background: #fff;
-        cursor: pointer;
-      }
-      .claim:active { transform: scale(0.99); }
-      .claim-row {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 10px;
-      }
-      .claim-id { font-weight: 800; }
-      .claim-muted {
-        font-size: 12px;
-        color: var(--muted);
-        margin-top: 2px;
-      }
-      .claim-next {
-        font-size: 13px;
-        margin-top: 8px;
-        color: #222;
-      }
+    .item{
+      border:1px solid var(--border);border-radius:16px;padding:12px;background:#fff;
+      display:flex;align-items:flex-start;justify-content:space-between;gap:10px
+    }
+    .item + .item{margin-top:10px}
+    .item-left{display:flex;gap:10px;align-items:flex-start}
+    .dot{width:12px;height:12px;border-radius:999px;border:2px solid #aaa;margin-top:3px}
+    .dot.ok{border-color:var(--ok);background:rgba(6,118,71,.12)}
+    .item-title{font-weight:950}
+    .item-sub{font-size:12px;color:var(--muted);margin-top:2px}
 
-      .status {
-        font-size: 11px;
-        font-weight: 800;
-        border: 1px solid var(--border);
-        border-radius: 999px;
-        padding: 6px 10px;
-        background: var(--pill);
-        white-space: nowrap;
-      }
+    /* Modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;padding:10px;z-index:9999}
+    @media(min-width:720px){.modal-overlay{align-items:center}}
+    .modal{width:100%;max-width:620px;background:#fff;border-radius:20px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.18);overflow:hidden}
+    .modal-header{padding:14px 14px 10px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .modal-title{font-size:16px;font-weight:950}
+    .modal-close{border:0;background:#fff;border-radius:12px;padding:8px 10px;font-weight:950;cursor:pointer}
+    .modal-body{padding:14px}
+    .field-label{font-size:12px;font-weight:950;margin-bottom:6px}
+    .modal-footer{padding:12px 14px 14px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-      .actions {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-        margin-top: 12px;
-      }
-      .btn {
-        border: 0;
-        border-radius: 16px;
-        padding: 12px 14px;
-        font-weight: 800;
-        cursor: pointer;
-      }
-      .btn-primary { background: #111; color: #fff; }
-      .btn-outline { background: #fff; border: 1px solid var(--border); color: #111; }
-      .btn-danger { background: var(--danger); color: #fff; }
-      .hidden { display: none !important; }
+    /* Bottom nav */
+    .bottom-nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--border);padding:8px}
+    .bottom-nav-inner{max-width:1060px;margin:0 auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+    .nav-btn{border:0;border-radius:16px;padding:10px 8px;background:#fff;border:1px solid transparent;font-weight:950;font-size:12px;color:#222}
+    .nav-btn.active{background:#111;color:#fff}
 
-      .tiny {
-        font-size: 12px;
-        color: var(--muted);
-        margin-top: 10px;
-      }
+    footer{margin-top:18px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);text-align:center}
+  </style>
+</head>
 
-      /* Bottom nav (mobile friendly) */
-      .bottom-nav {
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: #fff;
-        border-top: 1px solid var(--border);
-        padding: 8px;
-      }
-      .bottom-nav-inner {
-        max-width: 900px;
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 8px;
-      }
-      .nav-btn {
-        border: 0;
-        border-radius: 16px;
-        padding: 10px 8px;
-        background: #fff;
-        border: 1px solid transparent;
-        font-weight: 800;
-        font-size: 12px;
-        color: #222;
-      }
-      .nav-btn.active { background: #111; color: #fff; }
-
-      footer {
-        margin-top: 18px;
-        padding-top: 12px;
-        border-top: 1px solid var(--border);
-        font-size: 12px;
-        color: var(--muted);
-        text-align: center;
-      }
-
-      /* Modal */
-      .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.45);
-        display: flex;
-        align-items: flex-end;
-        justify-content: center;
-        padding: 10px;
-        z-index: 9999;
-      }
-      @media (min-width: 720px) {
-        .modal-overlay { align-items: center; }
-      }
-      .modal {
-        width: 100%;
-        max-width: 560px;
-        background: #fff;
-        border-radius: 20px;
-        border: 1px solid var(--border);
-        box-shadow: 0 20px 60px rgba(0,0,0,0.18);
-        overflow: hidden;
-      }
-      .modal-header {
-        padding: 14px 14px 10px 14px;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 10px;
-      }
-      .modal-title {
-        font-size: 16px;
-        font-weight: 900;
-      }
-      .modal-close {
-        border: 0;
-        background: #fff;
-        border-radius: 12px;
-        padding: 8px 10px;
-        font-weight: 900;
-        cursor: pointer;
-      }
-      .modal-body { padding: 14px; }
-      .field-label {
-        font-size: 12px;
-        font-weight: 800;
-        margin-bottom: 6px;
-      }
-      .input {
-        width: 100%;
-        padding: 12px 12px;
-        border-radius: 14px;
-        border: 1px solid var(--border);
-        font-size: 14px;
-      }
-      .help {
-        font-size: 12px;
-        color: var(--muted);
-        margin-top: 8px;
-        line-height: 1.35;
-      }
-      .modal-footer {
-        padding: 12px 14px 14px 14px;
-        border-top: 1px solid var(--border);
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-      }
-
-      .badge-row {
-        margin-top: 10px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-      .badge {
-        font-size: 12px;
-        font-weight: 900;
-        border: 1px solid var(--border);
-        border-radius: 999px;
-        padding: 6px 10px;
-        background: #fff;
-      }
-      .badge.ok { border-color: rgba(6,118,71,0.35); background: rgba(6,118,71,0.08); color: var(--ok); }
-      .badge.warn { border-color: rgba(180,35,24,0.35); background: rgba(180,35,24,0.08); color: var(--danger); }
-
-      .log {
-        margin-top: 10px;
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 10px;
-        background: #fff;
-      }
-      .log-title { font-size: 12px; font-weight: 900; margin-bottom: 6px; }
-      .log-item { font-size: 12px; color: #222; padding: 6px 0; border-top: 1px dashed #eee; }
-      .log-item:first-child { border-top: 0; }
-      .log-time { color: var(--muted); font-size: 11px; }
-    </style>
-  </head>
-
-  <body>
-    <div class="container">
-      <!-- HEADER / BRAND -->
-      <div class="topbar">
-        <div class="brand">
-          <!-- ✅ YOUR LOGO: must be same folder as index.html -->
-          <img
-            src="Onestop7.png"
-            alt="One Stop Compliance – RepairScope Platform"
-            onerror="document.getElementById('logoFallback').classList.remove('hidden'); this.classList.add('hidden');"
-          />
-          <div id="logoFallback" class="hidden" style="font-weight:900; font-size:18px;">
-            One Stop Compliance
-          </div>
-
-          <div class="brand-text">
-            <div class="confidential">Confidential Pilot</div>
-            <div class="title">One Stop Compliance</div>
-            <div class="subtitle">RepairScope Platform</div>
-          </div>
-        </div>
-
-        <div class="pill">MPI</div>
-      </div>
-
-      <!-- KPI CARDS -->
-      <div class="grid kpis">
-        <div class="card">
-          <div class="kpi-label">Open claims</div>
-          <div class="kpi-value" id="kpiTotal">3</div>
-        </div>
-        <div class="card">
-          <div class="kpi-label">Needs action</div>
-          <div class="kpi-value" id="kpiNeeds">3</div>
-        </div>
-        <div class="card">
-          <div class="kpi-label">Waiting MPI</div>
-          <div class="kpi-value" id="kpiMpi">1</div>
-        </div>
-        <div class="card">
-          <div class="kpi-label">Waiting parts</div>
-          <div class="kpi-value" id="kpiParts">1</div>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <div class="brand">
+        <img src="Onestop7.png" alt="One Stop Compliance – RepairScope Platform"
+             onerror="document.getElementById('logoFallback').classList.remove('hidden'); this.classList.add('hidden');" />
+        <div id="logoFallback" class="hidden" style="font-weight:950;font-size:18px;">One Stop Compliance</div>
+        <div class="brand-text">
+          <div class="confidential">Confidential Pilot</div>
+          <div class="title">One Stop Compliance</div>
+          <div class="subtitle">RepairScope Platform</div>
         </div>
       </div>
-
-      <!-- DASHBOARD LIST -->
-      <div class="card" id="dashboardCard">
-        <h3 class="section-title">Top priority claims</h3>
-
-        <button class="claim" onclick="openClaims()">
-          <div class="claim-row">
-            <div>
-              <div class="claim-id">MPI-1023481</div>
-              <div class="claim-muted">2022 Ford F-150 • RO-7712</div>
-              <div class="claim-muted">Last activity: <span id="t1"></span></div>
-            </div>
-            <div class="status">Waiting Approval</div>
-          </div>
-          <div class="claim-next"><b>Next:</b> Enter MPI verbal auth code + proof; Admin approve OEM delta</div>
-        </button>
-
-        <div style="height:10px"></div>
-
-        <button class="claim" onclick="openClaims()">
-          <div class="claim-row">
-            <div>
-              <div class="claim-id">MPI-1023559</div>
-              <div class="claim-muted">2019 Honda CR-V • RO-7720</div>
-              <div class="claim-muted">Last activity: <span id="t2"></span></div>
-            </div>
-            <div class="status">Waiting Parts</div>
-          </div>
-          <div class="claim-next"><b>Next:</b> Get ETA update; notify customer</div>
-        </button>
-
-        <div style="height:10px"></div>
-
-        <button class="claim" onclick="openClaims()">
-          <div class="claim-row">
-            <div>
-              <div class="claim-id">MPI-1023602</div>
-              <div class="claim-muted">2021 Toyota RAV4 • RO-7731</div>
-              <div class="claim-muted">Last activity: <span id="t3"></span></div>
-            </div>
-            <div class="status">Planning</div>
-          </div>
-          <div class="claim-next"><b>Next:</b> Issue materials from stock or order seam sealer</div>
-        </button>
-
-        <div class="tiny">
-          Production intent: encrypted data + role-based access + full audit logging (every action time/date stamped).
-        </div>
-      </div>
-
-      <!-- CLAIMS VIEW -->
-      <div class="card hidden" id="claimsCard">
-        <h3 class="section-title">Claims (Pilot Demo)</h3>
-
-        <div class="badge-row">
-          <span class="badge warn" id="authBadge">MPI Verbal Auth: Not recorded</span>
-          <span class="badge" id="portalBadge">MPI Portal: Not opened</span>
-        </div>
-
-        <div class="actions">
-          <button class="btn btn-primary" onclick="openDashboard()">Back to Dashboard</button>
-
-          <button class="btn btn-outline" onclick="openMPIPortal()">
-            Open MPI Portal
-          </button>
-
-          <button class="btn btn-outline" onclick="openAuthModal()">
-            Enter MPI Authorization Code
-          </button>
-
-          <button class="btn btn-outline" onclick="openChecklist()">
-            Open Checklist
-          </button>
-        </div>
-
-        <div class="log" id="auditLogBox">
-          <div class="log-title">Audit Log (Demo Preview)</div>
-          <div id="auditLog"></div>
-        </div>
-
-        <div class="tiny">
-          Compliance note: MPI credentials are never stored or accessed by this platform. Portal opens in a separate session.
-        </div>
-      </div>
-
-      <!-- CHECKLIST VIEW -->
-      <div class="card hidden" id="checklistCard">
-        <h3 class="section-title">MPI Checklist (Demo)</h3>
-        <div style="color:#444; font-size:14px;">
-          In production: tap-to-complete Records on File, attach photos and approvals, and maintain audit readiness.
-        </div>
-
-        <div class="actions">
-          <button class="btn btn-primary" onclick="openDashboard()">Back to Dashboard</button>
-          <button class="btn btn-outline" onclick="openAuthModal()">Enter MPI Authorization Code</button>
-          <button class="btn btn-outline" onclick="openMPIPortal()">Open MPI Portal</button>
-          <button class="btn btn-outline" onclick="alert('Demo: This would add tagged evidence and log the action with time/date.')">Add Evidence</button>
-        </div>
-
-        <div class="tiny">
-          Enterprise default: Admin override requires reason and is fully logged.
-        </div>
-      </div>
-
-      <!-- ADMIN VIEW -->
-      <div class="card hidden" id="adminCard">
-        <h3 class="section-title">Admin: Security & Audits (Demo)</h3>
-        <div style="color:#444; font-size:14px;">
-          In production: remote access control, MFA enforcement, accountant export windows, and insurer audit access termination on “Audit Completed”.
-        </div>
-
-        <div class="actions">
-          <button class="btn btn-primary" onclick="openDashboard()">Back to Dashboard</button>
-          <button class="btn btn-outline" onclick="alert('Demo: Audit Completed would invalidate access and notify the shop.')">Audit Completed</button>
-          <button class="btn btn-outline" onclick="openMPIPortal()">Open MPI Portal</button>
-          <button class="btn btn-outline" onclick="openAuthModal()">Enter MPI Authorization Code</button>
-        </div>
-      </div>
-
-      <!-- COPYRIGHT / CONFIDENTIAL -->
-      <footer>
-        © 2026 Greg Evanochko & Brad Beckett<br />
-        One Stop Compliance – RepairScope Platform<br />
-        Confidential &amp; Proprietary
-      </footer>
+      <div class="pill">MPI</div>
     </div>
 
-    <!-- AUTH MODAL -->
-    <div class="modal-overlay hidden" id="authModal" role="dialog" aria-modal="true" aria-label="MPI Authorization Code">
-      <div class="modal">
-        <div class="modal-header">
-          <div>
-            <div class="modal-title">MPI Verbal Authorization</div>
-            <div class="confidential">Record the authorization code for audit trail.</div>
-          </div>
-          <button class="modal-close" onclick="closeAuthModal()">✕</button>
-        </div>
-
-        <div class="modal-body">
-          <div class="field-label">MPI representative name</div>
-          <input id="mpiRep" class="input" placeholder="e.g., Jane Doe" />
-
-          <div style="height:12px;"></div>
-
-          <div class="field-label">Authorization code</div>
-          <input id="mpiAuthCode" class="input" placeholder="Enter code provided by MPI" />
-
-          <div style="height:12px;"></div>
-
-          <div class="field-label">Notes (optional)</div>
-          <input id="mpiAuthNotes" class="input" placeholder="What was approved? (part, cost, reason)" />
-
-          <div class="help">
-            This records the code inside One Stop Compliance and logs the action with time/date.
-            MPI credentials are not stored. For portal access, use the “Open MPI Portal” button.
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button class="btn btn-outline" onclick="closeAuthModal()">Cancel</button>
-          <button class="btn btn-primary" onclick="saveAuthCode()">Save</button>
-        </div>
+    <!-- LOGIN BAR -->
+    <div class="row" id="loginRow">
+      <div class="row-left">
+        <select class="select" id="pinUserSelect"></select>
+        <input class="input" id="pinInput" inputmode="numeric" placeholder="Enter PIN" style="min-width:150px" />
+        <button class="btn btn-primary" onclick="loginWithPin()">Unlock</button>
+        <button class="btn btn-outline" onclick="logout()">Lock</button>
+      </div>
+      <div class="small">
+        Status: <span id="loginStatus" class="mono">LOCKED</span>
       </div>
     </div>
 
-    <script>
-      // --- Demo timestamps ---
-      const now = Date.now();
-      document.getElementById("t1").textContent = new Date(now - 1000 * 60 * 18).toLocaleString();
-      document.getElementById("t2").textContent = new Date(now - 1000 * 60 * 75).toLocaleString();
-      document.getElementById("t3").textContent = new Date(now - 1000 * 60 * 9).toLocaleString();
+    <!-- ROLE + CLAIM -->
+    <div class="row">
+      <div class="row-left">
+        <span class="badge info">User: <span id="whoUser" class="mono">—</span></span>
+        <span class="badge">Role: <span id="whoRole" class="mono">—</span></span>
 
-      // --- MPI portal URL (UPDATED) ---
-      const MPI_PORTAL_URL = "https://mpipartners.ca/Login.aspx";
+        <select class="select" id="claimSelect" onchange="setCurrentClaim(this.value)"></select>
+        <button class="btn btn-outline" onclick="openCreateClaimModal()">+ New Claim</button>
+      </div>
+      <div class="small">
+        Current claim: <span id="currentClaimLabel" class="mono">—</span>
+      </div>
+    </div>
 
-      // --- Simple demo state (stored locally) ---
-      const STORAGE_KEY = "osc_demo_state_v1";
-      const state = loadState();
+    <!-- KPIs -->
+    <div class="grid kpis">
+      <div class="card"><div class="kpi-label">Open claims</div><div class="kpi-value" id="kpiTotal">0</div></div>
+      <div class="card"><div class="kpi-label">Needs action</div><div class="kpi-value" id="kpiNeeds">0</div></div>
+      <div class="card"><div class="kpi-label">Waiting MPI</div><div class="kpi-value" id="kpiMpi">0</div></div>
+      <div class="card"><div class="kpi-label">Waiting parts</div><div class="kpi-value" id="kpiParts">0</div></div>
+      <div class="card"><div class="kpi-label">Closed</div><div class="kpi-value" id="kpiClosed">0</div></div>
+    </div>
 
-      function loadState() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          if (!raw) return { mpiPortalOpenedAt: null, mpiAuth: null, auditLog: [] };
-          return JSON.parse(raw);
-        } catch {
-          return { mpiPortalOpenedAt: null, mpiAuth: null, auditLog: [] };
-        }
+    <!-- DASHBOARD -->
+    <div class="card" id="dashboardCard">
+      <h3 class="section-title">Dashboard</h3>
+      <div class="small">Pilot-grade “real” workflow (stored locally). Export data to review and streamline.</div>
+      <div style="height:10px"></div>
+      <div id="dashboardClaims"></div>
+
+      <div class="actions">
+        <button class="btn btn-outline" onclick="exportLogsCSV()">Export Logs (CSV)</button>
+        <button class="btn btn-outline" onclick="exportDataJSON()">Export Data (JSON)</button>
+        <button class="btn btn-outline" onclick="openAdmin()">Admin / Pilot Prep</button>
+        <button class="btn btn-primary" onclick="openClaim()">Open Current Claim</button>
+      </div>
+
+      <div class="log">
+        <div class="log-title">Audit Log (Live)</div>
+        <div id="auditLogDash"></div>
+      </div>
+    </div>
+
+    <!-- CLAIM WORKSPACE -->
+    <div class="card hidden" id="claimsCard">
+      <h3 class="section-title">Claim Workspace</h3>
+      <div class="small">Selected: <span class="mono" id="claimSummary">—</span></div>
+
+      <div class="badge-row">
+        <span class="badge" id="badgeStatus">Status: —</span>
+        <span class="badge warn" id="authBadge">MPI Verbal Auth: Not recorded</span>
+        <span class="badge" id="portalBadge">MPI Portal: Not opened</span>
+        <span class="badge" id="lockedBadge">Edit: Locked</span>
+      </div>
+
+      <div class="tabs" id="workspaceTabs">
+        <button class="tab active" onclick="setWorkspaceTab('overview')">Overview</button>
+        <button class="tab" onclick="setWorkspaceTab('tech')">Tech</button>
+        <button class="tab" onclick="setWorkspaceTab('parts')">Parts</button>
+        <button class="tab" onclick="setWorkspaceTab('materials')">Materials</button>
+        <button class="tab" onclick="setWorkspaceTab('checklist')">MPI Checklist</button>
+        <button class="tab" onclick="setWorkspaceTab('evidence')">Evidence</button>
+        <button class="tab" onclick="setWorkspaceTab('audit')">Audit Log</button>
+      </div>
+
+      <!-- Panels -->
+      <div class="panel" id="panel-overview"></div>
+      <div class="panel hidden" id="panel-tech"></div>
+      <div class="panel hidden" id="panel-parts"></div>
+      <div class="panel hidden" id="panel-materials"></div>
+      <div class="panel hidden" id="panel-checklist"></div>
+      <div class="panel hidden" id="panel-evidence"></div>
+      <div class="panel hidden" id="panel-audit"></div>
+
+      <div class="actions">
+        <button class="btn btn-primary" onclick="openDashboard()">Back to Dashboard</button>
+        <button class="btn btn-outline" id="btnPortal" onclick="openMPIPortal()">Open MPI Portal</button>
+        <button class="btn btn-outline" id="btnAuth" onclick="openAuthModal()">Enter MPI Authorization Code</button>
+        <button class="btn btn-danger" id="btnCloseClaim" onclick="closeClaim()">Close Claim</button>
+      </div>
+    </div>
+
+    <!-- CHECKLIST PAGE (nav) -->
+    <div class="card hidden" id="checklistCard">
+      <h3 class="section-title">MPI Checklist (Quick View)</h3>
+      <div class="small">Same checklist as claim workspace; included here for navigation simplicity.</div>
+      <div class="badge-row">
+        <span class="badge" id="checkClaimBadge">Claim: —</span>
+        <span class="badge" id="checkProgressBadge">Progress: —</span>
+      </div>
+      <div style="height:10px"></div>
+      <div id="checklistItems"></div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="openClaim()">Back to Claim</button>
+        <button class="btn btn-outline" id="btnAddEvidence" onclick="addEvidence('Checklist')">Add Evidence (Logged)</button>
+        <button class="btn btn-outline" id="btnChecklistAuth" onclick="openAuthModal()">Enter MPI Authorization Code</button>
+        <button class="btn btn-outline" id="btnChecklistPortal" onclick="openMPIPortal()">Open MPI Portal</button>
+      </div>
+      <div class="log">
+        <div class="log-title">Audit Log (Claim)</div>
+        <div id="auditLogChecklist"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN / PILOT PREP -->
+    <div class="card hidden" id="adminCard">
+      <h3 class="section-title">Admin / Pilot Prep (Safe Mode)</h3>
+      <div class="badge-row">
+        <span class="badge ok">No insurer credential storage</span>
+        <span class="badge ok">No portal automation/scraping</span>
+        <span class="badge ok">Audit log enabled</span>
+        <span class="badge">MPI portal: <span class="mono">mpipartners.ca</span></span>
+      </div>
+
+      <div class="hr"></div>
+
+      <h3 class="section-title">Pilot Script</h3>
+      <div class="small">
+        <b>Open:</b> “This is One Stop Compliance – RepairScope Platform. It doesn’t replace MPI — it organizes approvals, evidence, and accountability so nothing gets missed.”<br><br>
+        <b>Show:</b> Dashboard → open claim → Open MPI Portal (separate login) → record verbal authorization → request parts/materials → show audit log → export report.<br><br>
+        <b>Close:</b> “If this reduces delays and prevents missed approvals, it pays for itself quickly. I’m looking for 1–2 pilot shops to shape it with real workflows.”
+      </div>
+
+      <div class="hr"></div>
+
+      <h3 class="section-title">Users (PIN Login)</h3>
+      <div class="small">Pilot uses PIN login for low friction. Admin can rotate PINs anytime.</div>
+      <div style="height:10px"></div>
+      <div id="userList"></div>
+
+      <div class="actions">
+        <button class="btn btn-primary" onclick="openDashboard()">Back to Dashboard</button>
+        <button class="btn btn-outline" onclick="rotatePins()">Rotate all PINs</button>
+        <button class="btn btn-outline" onclick="exportDataJSON()">Export Data (JSON)</button>
+        <button class="btn btn-danger" onclick="resetDemo()">Reset Demo</button>
+      </div>
+
+      <div class="log">
+        <div class="log-title">Audit Log (Global)</div>
+        <div id="auditLogAdmin"></div>
+      </div>
+    </div>
+
+    <footer>
+      © 2026 Greg Evanochko & Brad Beckett<br />
+      One Stop Compliance – RepairScope Platform<br />
+      Confidential &amp; Proprietary
+    </footer>
+  </div>
+
+  <!-- MODALS -->
+  <div class="modal-overlay hidden" id="authModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">MPI Verbal Authorization</div>
+          <div class="confidential">Saved to the selected claim and logged.</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('authModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="field-label">Apply to claim</div>
+        <select class="input" id="modalClaimSelect"></select>
+
+        <div style="height:12px;"></div>
+        <div class="field-label">MPI representative name</div>
+        <input id="mpiRep" class="input" placeholder="e.g., Jane Doe" />
+
+        <div style="height:12px;"></div>
+        <div class="field-label">Authorization code</div>
+        <input id="mpiAuthCode" class="input" placeholder="Enter code provided by MPI" />
+
+        <div style="height:12px;"></div>
+        <div class="field-label">Notes (optional)</div>
+        <input id="mpiAuthNotes" class="input" placeholder="What was approved? (part, cost, reason)" />
+
+        <div class="help small" style="margin-top:10px;">
+          Security note: We never store MPI credentials. This stores only your internal verbal auth record for audit trail.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('authModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveAuthCode()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay hidden" id="createClaimModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">Create New Claim</div>
+          <div class="confidential">Pilot entry only. Do not store sensitive data you don’t need.</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('createClaimModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="field-label">Claim ID (e.g., MPI-1023999)</div>
+        <input id="newClaimId" class="input" placeholder="MPI-########" />
+        <div style="height:12px;"></div>
+
+        <div class="field-label">RO #</div>
+        <input id="newRO" class="input" placeholder="RO-####" />
+        <div style="height:12px;"></div>
+
+        <div class="field-label">Vehicle</div>
+        <input id="newVehicle" class="input" placeholder="Year Make Model" />
+        <div style="height:12px;"></div>
+
+        <div class="field-label">Status</div>
+        <select id="newStatus" class="input">
+          <option>Planning</option>
+          <option>Waiting Approval</option>
+          <option>Waiting Parts</option>
+          <option>In Repair</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('createClaimModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="createClaim()">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <button id="navDashboard" class="nav-btn active" onclick="openDashboard()">Dashboard</button>
+      <button id="navClaims" class="nav-btn" onclick="openClaim()">Claims</button>
+      <button id="navChecklist" class="nav-btn" onclick="openChecklist()">Checklist</button>
+      <button id="navAdmin" class="nav-btn" onclick="openAdmin()">Admin</button>
+    </div>
+  </div>
+
+<script>
+  // ===== SAFE MODE (NO DIRECT INTEGRATIONS) =====
+  const MPI_PORTAL_URL = "https://mpipartners.ca/Login.aspx";
+
+  // ===== STORAGE =====
+  const STORAGE_KEY = "osc_pilot_static_v1";
+
+  function nowISO(){ return new Date().toISOString(); }
+  function fmt(iso){ return new Date(iso).toLocaleString(); }
+  function uid(){ return Math.random().toString(16).slice(2) + "-" + Math.random().toString(16).slice(2); }
+
+  // ===== DEFAULTS =====
+  function defaultUsers(){
+    // These are demo users; Admin can rotate pins
+    return [
+      { id: "u_admin", name:"Admin", role:"Admin", pin:"1234", enabled:true },
+      { id: "u_est", name:"Estimator", role:"Estimator", pin:"2222", enabled:true },
+      { id: "u_tech", name:"Technician", role:"Tech", pin:"3333", enabled:true },
+      { id: "u_acc", name:"Accountant", role:"Accountant", pin:"4444", enabled:true },
+      { id: "u_aud", name:"Auditor (Demo)", role:"Auditor", pin:"5555", enabled:true }
+    ];
+  }
+
+  function defaultChecklist(){
+    return [
+      { key:"estimate", label:"Estimate + supplements", note:"PDFs/notes on file", done:false },
+      { key:"approvals", label:"Approvals recorded", note:"Include supplements + verbal", done:false },
+      { key:"verbal", label:"Verbal approval record", note:"Name + code + notes", done:false },
+      { key:"pre", label:"Pre-repair photos", note:"Tagged evidence", done:false },
+      { key:"post", label:"Post-repair photos", note:"Tagged evidence", done:false }
+    ];
+  }
+
+  function defaultClaims(){
+    const t = Date.now();
+    return [
+      {
+        id:"MPI-1023481", ro:"RO-7712", vehicle:"2022 Ford F-150",
+        status:"Waiting Approval", open:true,
+        lastActivity:new Date(t-1000*60*18).toISOString(),
+        nextAction:"Enter MPI verbal auth code + proof; Admin approve OEM delta",
+        checklist: defaultChecklist(),
+        mpiAuth:null, mpiPortalOpenedAt:null,
+        techAssignments: [], // {techName, task, startedAt, endedAt}
+        partsRequests: [],   // see below
+        materialsRequests: [], // see below
+        evidence: [] // {type, label, by, at, notes}
+      },
+      {
+        id:"MPI-1023559", ro:"RO-7720", vehicle:"2019 Honda CR-V",
+        status:"Waiting Parts", open:true,
+        lastActivity:new Date(t-1000*60*75).toISOString(),
+        nextAction:"Get ETA update; notify customer",
+        checklist: defaultChecklist().map(x=> ({...x, done:false})),
+        mpiAuth:null, mpiPortalOpenedAt:null,
+        techAssignments: [], partsRequests: [], materialsRequests: [], evidence:[]
+      },
+      {
+        id:"MPI-1023602", ro:"RO-7731", vehicle:"2021 Toyota RAV4",
+        status:"Planning", open:true,
+        lastActivity:new Date(t-1000*60*9).toISOString(),
+        nextAction:"Issue materials from stock or order seam sealer",
+        checklist: defaultChecklist().map(x=> ({...x, done:false})),
+        mpiAuth:null, mpiPortalOpenedAt:null,
+        techAssignments: [], partsRequests: [], materialsRequests: [], evidence:[]
       }
+    ];
+  }
 
-      function saveState() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      }
+  function defaultState(){
+    return {
+      currentUserId:null,
+      sessionUnlocked:false,
+      currentClaimId:"MPI-1023481",
+      users: defaultUsers(),
+      claims: defaultClaims(),
+      auditLog: [] // {at, userId, userName, role, claimId, action, details}
+    };
+  }
 
-      function addLog(action, details) {
-        const item = {
-          at: new Date().toISOString(),
-          action,
-          details: details || ""
-        };
-        state.auditLog.unshift(item);
-        state.auditLog = state.auditLog.slice(0, 12); // keep it short for demo
-        saveState();
-        renderBadges();
-        renderLog();
-      }
+  // ===== STATE LOAD/SAVE =====
+  const state = loadState();
 
-      // --- Navigation ---
-      function setActiveNav(which) {
-        const ids = ["navDashboard", "navClaims", "navChecklist", "navAdmin"];
-        ids.forEach((id) => document.getElementById(id).classList.remove("active"));
-        document.getElementById(which).classList.add("active");
-      }
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return defaultState();
+      const obj = JSON.parse(raw);
+      if(!obj.users) obj.users = defaultUsers();
+      if(!obj.claims) obj.claims = defaultClaims();
+      if(!obj.auditLog) obj.auditLog = [];
+      if(!obj.currentClaimId) obj.currentClaimId = obj.claims[0]?.id || null;
+      return obj;
+    }catch{
+      return defaultState();
+    }
+  }
 
-      function showOnly(cardId) {
-        const cards = ["dashboardCard", "claimsCard", "checklistCard", "adminCard"];
-        cards.forEach((id) => document.getElementById(id).classList.add("hidden"));
-        document.getElementById(cardId).classList.remove("hidden");
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
+  function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
-      function openDashboard() { setActiveNav("navDashboard"); showOnly("dashboardCard"); addLog("Viewed Dashboard"); }
-      function openClaims() { setActiveNav("navClaims"); showOnly("claimsCard"); addLog("Viewed Claims"); }
-      function openChecklist() { setActiveNav("navChecklist"); showOnly("checklistCard"); addLog("Viewed MPI Checklist"); }
-      function openAdmin() { setActiveNav("navAdmin"); showOnly("adminCard"); addLog("Viewed Admin"); }
+  function getUser(){
+    if(!state.currentUserId) return null;
+    return state.users.find(u => u.id === state.currentUserId) || null;
+  }
 
-      // --- MPI Portal Button (safe outbound link) ---
-      function openMPIPortal() {
-        const confirmAccess = confirm(
-          "You are about to leave One Stop Compliance and access the MPI system.\n\n" +
-          "MPI credentials are not stored or accessed by this platform.\n" +
-          "This action will be logged for audit purposes.\n\n" +
-          "Continue?"
-        );
+  function getClaim(id){
+    return state.claims.find(c => c.id === id) || null;
+  }
 
-        if (!confirmAccess) return;
+  // ===== LOGGING =====
+  function addLog(action, details, claimIdOverride){
+    const user = getUser();
+    const claimId = claimIdOverride ?? state.currentClaimId ?? "(none)";
+    const entry = {
+      at: nowISO(),
+      userId: user?.id || "(locked)",
+      userName: user?.name || "LOCKED",
+      role: user?.role || "LOCKED",
+      claimId,
+      action,
+      details: details || ""
+    };
+    state.auditLog.unshift(entry);
+    state.auditLog = state.auditLog.slice(0, 80);
+    saveState();
+    renderAll(false);
+  }
 
-        window.open(MPI_PORTAL_URL, "_blank", "noopener,noreferrer");
-        state.mpiPortalOpenedAt = new Date().toISOString();
-        saveState();
-        addLog("Opened MPI Portal", MPI_PORTAL_URL);
-      }
+  // ===== PERMISSIONS =====
+  function role(){ return getUser()?.role || "LOCKED"; }
+  function isUnlocked(){ return state.sessionUnlocked && !!getUser(); }
 
-      // --- MPI Authorization Modal ---
-      function openAuthModal() {
-        document.getElementById("authModal").classList.remove("hidden");
-        document.getElementById("mpiRep").focus();
-        addLog("Opened MPI Authorization modal");
-      }
+  function canEditClaim(){
+    return isUnlocked() && (role()==="Estimator" || role()==="Admin");
+  }
+  function canTechWork(){
+    return isUnlocked() && (role()==="Tech" || role()==="Admin");
+  }
+  function canApproveParts(){
+    return isUnlocked() && (role()==="Admin"); // admin only for cost deltas / exceptions
+  }
+  function canApproveMaterials(){
+    return isUnlocked() && (role()==="Estimator" || role()==="Admin");
+  }
+  function canAccountantExport(){
+    // Accountant can export only if unlocked (in real app, would require admin grant)
+    return isUnlocked() && (role()==="Accountant" || role()==="Admin");
+  }
+  function canAuditorView(){
+    return isUnlocked() && role()==="Auditor";
+  }
+  function canOpenPortal(){
+    return isUnlocked() && role()!=="Auditor";
+  }
 
-      function closeAuthModal() {
-        document.getElementById("authModal").classList.add("hidden");
-        addLog("Closed MPI Authorization modal");
-      }
+  // ===== LOGIN (PIN) =====
+  function populateUserSelect(){
+    const sel = document.getElementById("pinUserSelect");
+    sel.innerHTML = "";
+    state.users.filter(u=>u.enabled).forEach(u=>{
+      const opt = document.createElement("option");
+      opt.value = u.id;
+      opt.textContent = `${u.name} (${u.role})`;
+      sel.appendChild(opt);
+    });
+    if(state.currentUserId) sel.value = state.currentUserId;
+  }
 
-      function saveAuthCode() {
-        const rep = document.getElementById("mpiRep").value.trim();
-        const code = document.getElementById("mpiAuthCode").value.trim();
-        const notes = document.getElementById("mpiAuthNotes").value.trim();
+  function loginWithPin(){
+    const uidSel = document.getElementById("pinUserSelect").value;
+    const pin = (document.getElementById("pinInput").value || "").trim();
+    const user = state.users.find(u=>u.id===uidSel);
+    if(!user){ alert("Select a user."); return; }
+    if(pin !== user.pin){ alert("Incorrect PIN"); addLog("Failed PIN login", `User ${user.name}`); return; }
+    state.currentUserId = user.id;
+    state.sessionUnlocked = true;
+    document.getElementById("pinInput").value = "";
+    saveState();
+    addLog("PIN login success", `${user.name} (${user.role})`);
+    renderAll(true);
+  }
 
-        if (!code) {
-          alert("Please enter the MPI authorization code.");
-          return;
-        }
+  function logout(){
+    const user = getUser();
+    state.sessionUnlocked = false;
+    saveState();
+    addLog("Locked session", user ? user.name : "");
+    renderAll(true);
+  }
 
-        state.mpiAuth = {
-          rep: rep || "MPI Rep (not entered)",
-          code,
-          notes: notes || "",
-          at: new Date().toISOString()
-        };
+  // ===== NAVIGATION =====
+  function setActiveNav(which){
+    ["navDashboard","navClaims","navChecklist","navAdmin"].forEach(id=>document.getElementById(id).classList.remove("active"));
+    document.getElementById(which).classList.add("active");
+  }
+  function showOnly(cardId){
+    ["dashboardCard","claimsCard","checklistCard","adminCard"].forEach(id=>document.getElementById(id).classList.add("hidden"));
+    document.getElementById(cardId).classList.remove("hidden");
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+  function openDashboard(){ setActiveNav("navDashboard"); showOnly("dashboardCard"); addLog("Viewed Dashboard"); }
+  function openClaim(){ setActiveNav("navClaims"); showOnly("claimsCard"); addLog("Viewed Claim Workspace"); renderWorkspace(); }
+  function openChecklist(){ setActiveNav("navChecklist"); showOnly("checklistCard"); addLog("Viewed MPI Checklist"); renderChecklist(); }
+  function openAdmin(){ setActiveNav("navAdmin"); showOnly("adminCard"); addLog("Viewed Admin"); renderAdmin(); }
 
-        saveState();
-        addLog("Saved MPI Authorization Code", `Rep: ${state.mpiAuth.rep} • Code: ${mask(code)}`);
-        closeAuthModal();
-      }
+  // ===== CLAIM SELECT =====
+  function renderClaimSelect(){
+    const sel = document.getElementById("claimSelect");
+    sel.innerHTML = "";
+    state.claims.forEach(c=>{
+      const opt = document.createElement("option");
+      opt.value = c.id;
+      opt.textContent = `${c.id} (${c.ro})${c.open ? "" : " • CLOSED"}`;
+      sel.appendChild(opt);
+    });
+    sel.value = state.currentClaimId;
+    document.getElementById("currentClaimLabel").textContent = state.currentClaimId || "—";
+  }
+  function setCurrentClaim(id){
+    state.currentClaimId = id;
+    saveState();
+    addLog("Selected Claim", id, id);
+    renderAll(false);
+  }
 
-      function mask(code) {
-        // show last 3 chars only (demo-friendly privacy)
-        if (!code) return "";
-        const s = String(code);
-        if (s.length <= 3) return "***";
-        return "*".repeat(Math.max(3, s.length - 3)) + s.slice(-3);
-      }
+  // ===== DASHBOARD RENDER =====
+  function renderKPIs(){
+    const openClaims = state.claims.filter(c=>c.open);
+    const closed = state.claims.filter(c=>!c.open).length;
+    const total = openClaims.length;
 
-      // --- Render badges + audit log ---
-      function renderBadges() {
-        const authBadge = document.getElementById("authBadge");
-        const portalBadge = document.getElementById("portalBadge");
+    const needsAction = openClaims.filter(c=>{
+      const missingChecklist = c.checklist.some(x=>!x.done);
+      const missingAuth = !c.mpiAuth;
+      return missingChecklist || missingAuth;
+    }).length;
 
-        if (state.mpiAuth && state.mpiAuth.code) {
-          authBadge.textContent = `MPI Verbal Auth: Recorded (${mask(state.mpiAuth.code)})`;
-          authBadge.classList.remove("warn");
-          authBadge.classList.add("ok");
-        } else {
-          authBadge.textContent = "MPI Verbal Auth: Not recorded";
-          authBadge.classList.add("warn");
-          authBadge.classList.remove("ok");
-        }
+    const waitingMpi = openClaims.filter(c=>c.status==="Waiting Approval").length;
+    const waitingParts = openClaims.filter(c=>c.status==="Waiting Parts").length;
 
-        if (state.mpiPortalOpenedAt) {
-          portalBadge.textContent = `MPI Portal: Opened (${new Date(state.mpiPortalOpenedAt).toLocaleString()})`;
-          portalBadge.classList.add("ok");
-        } else {
-          portalBadge.textContent = "MPI Portal: Not opened";
-          portalBadge.classList.remove("ok");
-        }
-      }
+    document.getElementById("kpiTotal").textContent = total;
+    document.getElementById("kpiNeeds").textContent = needsAction;
+    document.getElementById("kpiMpi").textContent = waitingMpi;
+    document.getElementById("kpiParts").textContent = waitingParts;
+    document.getElementById("kpiClosed").textContent = closed;
+  }
 
-      function renderLog() {
-        const el = document.getElementById("auditLog");
-        if (!state.auditLog || state.auditLog.length === 0) {
-          el.innerHTML = `<div class="log-item"><div>No events yet.</div><div class="log-time">Actions will appear here.</div></div>`;
-          return;
-        }
-
-        el.innerHTML = state.auditLog
-          .map((x) => {
-            const t = new Date(x.at).toLocaleString();
-            const d = x.details ? ` • ${escapeHtml(x.details)}` : "";
-            return `<div class="log-item"><div><b>${escapeHtml(x.action)}</b>${d}</div><div class="log-time">${t}</div></div>`;
-          })
-          .join("");
-      }
-
-      function escapeHtml(str) {
-        return String(str)
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll("\"", "&quot;")
-          .replaceAll("'", "&#039;");
-      }
-
-      // --- Init ---
-      renderBadges();
-      renderLog();
-      openDashboard();
-
-      // Close modal if user taps outside it (mobile-friendly)
-      document.getElementById("authModal").addEventListener("click", function(e) {
-        if (e.target === this) closeAuthModal();
+  function renderDashboardClaims(){
+    const el = document.getElementById("dashboardClaims");
+    el.innerHTML = "";
+    state.claims
+      .slice()
+      .sort((a,b)=> (b.open - a.open) || (new Date(b.lastActivity)-new Date(a.lastActivity)))
+      .forEach(c=>{
+        const missing = c.checklist.filter(x=>!x.done).length + (c.mpiAuth?0:1);
+        const btn = document.createElement("button");
+        btn.className="claim";
+        btn.onclick=()=>{ setCurrentClaim(c.id); openClaim(); };
+        btn.innerHTML = `
+          <div class="claim-row">
+            <div>
+              <div class="claim-id">${c.id}</div>
+              <div class="claim-muted">${c.vehicle} • ${c.ro}</div>
+              <div class="claim-muted">Last: ${fmt(c.lastActivity)} • Missing: <b>${missing}</b></div>
+            </div>
+            <div class="status">${c.open ? c.status : "CLOSED"}</div>
+          </div>
+          <div class="claim-next"><b>Next:</b> ${c.nextAction || "—"}</div>
+        `;
+        el.appendChild(btn);
+        const spacer=document.createElement("div");spacer.style.height="10px";el.appendChild(spacer);
       });
-    </script>
+  }
 
-    <!-- BOTTOM NAV -->
-    <div class="bottom-nav">
-      <div class="bottom-nav-inner">
-        <button id="navDashboard" class="nav-btn active" onclick="openDashboard()">Dashboard</button>
-        <button id="navClaims" class="nav-btn" onclick="openClaims()">Claims</button>
-        <button id="navChecklist" class="nav-btn" onclick="openChecklist()">Checklist</button>
-        <button id="navAdmin" class="nav-btn" onclick="openAdmin()">Admin</button>
+  // ===== WORKSPACE TABS =====
+  let workspaceTab = "overview";
+  function setWorkspaceTab(tab){
+    workspaceTab = tab;
+    [...document.querySelectorAll("#workspaceTabs .tab")].forEach(b=>b.classList.remove("active"));
+    const btns = [...document.querySelectorAll("#workspaceTabs .tab")];
+    const idx = ["overview","tech","parts","materials","checklist","evidence","audit"].indexOf(tab);
+    if(btns[idx]) btns[idx].classList.add("active");
+
+    ["overview","tech","parts","materials","checklist","evidence","audit"].forEach(t=>{
+      document.getElementById(`panel-${t}`).classList.toggle("hidden", t!==tab);
+    });
+    addLog("Switched workspace tab", tab);
+    renderWorkspace();
+  }
+
+  // ===== MPI PORTAL =====
+  function openMPIPortal(){
+    if(!canOpenPortal()){
+      alert("This role cannot open the MPI portal in the pilot.");
+      addLog("Blocked: Open MPI Portal", "Role restricted");
+      return;
+    }
+    const ok = confirm(
+      "You are leaving One Stop Compliance to access MPI Partners.\n\n" +
+      "MPI credentials are NOT stored or accessed by this platform.\n" +
+      "This action will be logged for audit purposes.\n\nContinue?"
+    );
+    if(!ok){ addLog("Cancelled: Open MPI Portal"); return; }
+    window.open(MPI_PORTAL_URL, "_blank", "noopener,noreferrer");
+
+    const c = getClaim(state.currentClaimId);
+    c.mpiPortalOpenedAt = nowISO();
+    c.lastActivity = nowISO();
+    saveState();
+    addLog("Opened MPI Portal", MPI_PORTAL_URL);
+    renderAll(false);
+  }
+
+  // ===== AUTH MODAL =====
+  function openAuthModal(){
+    if(!(isUnlocked() && (role()==="Estimator" || role()==="Admin"))){
+      alert("Only Estimator or Admin can record MPI authorization codes.");
+      addLog("Blocked: Open Auth Modal", "Role restricted");
+      return;
+    }
+    const sel = document.getElementById("modalClaimSelect");
+    sel.innerHTML = "";
+    state.claims.forEach(c=>{
+      const opt = document.createElement("option");
+      opt.value=c.id; opt.textContent=`${c.id} (${c.ro})`;
+      sel.appendChild(opt);
+    });
+    sel.value = state.currentClaimId;
+
+    const c = getClaim(sel.value);
+    document.getElementById("mpiRep").value = c.mpiAuth?.rep || "";
+    document.getElementById("mpiAuthCode").value = c.mpiAuth?.code || "";
+    document.getElementById("mpiAuthNotes").value = c.mpiAuth?.notes || "";
+
+    openModal("authModal");
+    addLog("Opened MPI Authorization modal");
+  }
+
+  function saveAuthCode(){
+    const claimId = document.getElementById("modalClaimSelect").value;
+    const rep = document.getElementById("mpiRep").value.trim();
+    const code = document.getElementById("mpiAuthCode").value.trim();
+    const notes = document.getElementById("mpiAuthNotes").value.trim();
+    if(!code){ alert("Enter an authorization code."); return; }
+
+    const c = getClaim(claimId);
+    c.mpiAuth = { rep: rep||"MPI Rep (not entered)", code, notes: notes||"", at: nowISO() };
+    c.lastActivity = nowISO();
+
+    const verbal = c.checklist.find(x=>x.key==="verbal");
+    if(verbal) verbal.done = true;
+
+    saveState();
+    addLog("Saved MPI Authorization Code", `Claim ${claimId} • Rep: ${c.mpiAuth.rep} • Code: ${mask(code)}`, claimId);
+    closeModal("authModal");
+    renderAll(false);
+  }
+
+  function mask(code){
+    const s = String(code||"");
+    if(s.length<=3) return "***";
+    return "*".repeat(Math.max(3,s.length-3))+s.slice(-3);
+  }
+
+  // ===== CLAIM CRUD =====
+  function openCreateClaimModal(){
+    if(!canEditClaim()){
+      alert("Only Estimator or Admin can create claims.");
+      addLog("Blocked: Create claim", "Role restricted");
+      return;
+    }
+    document.getElementById("newClaimId").value="";
+    document.getElementById("newRO").value="";
+    document.getElementById("newVehicle").value="";
+    document.getElementById("newStatus").value="Planning";
+    openModal("createClaimModal");
+    addLog("Opened Create Claim modal");
+  }
+
+  function createClaim(){
+    const id = document.getElementById("newClaimId").value.trim();
+    const ro = document.getElementById("newRO").value.trim();
+    const vehicle = document.getElementById("newVehicle").value.trim();
+    const status = document.getElementById("newStatus").value;
+
+    if(!id || !ro || !vehicle){ alert("Please fill claim ID, RO, and vehicle."); return; }
+    if(state.claims.some(c=>c.id===id)){ alert("That claim ID already exists."); return; }
+
+    const claim = {
+      id, ro, vehicle, status, open:true,
+      lastActivity: nowISO(),
+      nextAction:"Review scope, record approvals, assign techs, order parts/materials",
+      checklist: defaultChecklist().map(x=>({...x, done:false})),
+      mpiAuth:null, mpiPortalOpenedAt:null,
+      techAssignments: [], partsRequests: [], materialsRequests: [], evidence:[]
+    };
+    state.claims.unshift(claim);
+    state.currentClaimId = id;
+    saveState();
+    addLog("Created claim", `${id} • ${ro} • ${vehicle}`, id);
+    closeModal("createClaimModal");
+    renderAll(false);
+    openClaim();
+  }
+
+  function closeClaim(){
+    if(!canEditClaim()){
+      alert("Only Estimator or Admin can close claims.");
+      addLog("Blocked: Close claim", "Role restricted");
+      return;
+    }
+    const c = getClaim(state.currentClaimId);
+    if(!c.open){ alert("Already closed."); return; }
+    if(!confirm(`Close claim ${c.id}?`)) return;
+    c.open=false;
+    c.status="CLOSED";
+    c.lastActivity=nowISO();
+    saveState();
+    addLog("Closed claim", c.id, c.id);
+    renderAll(false);
+    openDashboard();
+  }
+
+  // ===== WORKSPACE PANELS =====
+  function renderWorkspace(){
+    const c = getClaim(state.currentClaimId);
+    if(!c) return;
+
+    document.getElementById("claimSummary").textContent = `${c.id} • ${c.vehicle} • ${c.ro}`;
+    document.getElementById("badgeStatus").textContent = `Status: ${c.open ? c.status : "CLOSED"}`;
+
+    // badges
+    const authBadge = document.getElementById("authBadge");
+    if(c.mpiAuth?.code){
+      authBadge.textContent = `MPI Verbal Auth: Recorded (${mask(c.mpiAuth.code)})`;
+      authBadge.className = "badge ok";
+    } else {
+      authBadge.textContent = "MPI Verbal Auth: Not recorded";
+      authBadge.className = "badge warn";
+    }
+
+    const portalBadge = document.getElementById("portalBadge");
+    if(c.mpiPortalOpenedAt){
+      portalBadge.textContent = `MPI Portal: Opened (${fmt(c.mpiPortalOpenedAt)})`;
+      portalBadge.className = "badge ok";
+    } else {
+      portalBadge.textContent = "MPI Portal: Not opened";
+      portalBadge.className = "badge";
+    }
+
+    document.getElementById("lockedBadge").textContent = isUnlocked() ? "Edit: Unlocked" : "Edit: Locked";
+    document.getElementById("lockedBadge").className = isUnlocked() ? "badge ok" : "badge danger";
+
+    // buttons disabled/enabled
+    document.getElementById("btnPortal").disabled = !canOpenPortal();
+    document.getElementById("btnAuth").disabled = !(isUnlocked() && (role()==="Estimator"||role()==="Admin"));
+    document.getElementById("btnCloseClaim").disabled = !canEditClaim();
+
+    // overview panel
+    document.getElementById("panel-overview").innerHTML = `
+      <div class="item">
+        <div class="item-left">
+          <div class="dot ${c.open ? "ok":""}"></div>
+          <div>
+            <div class="item-title">Next action</div>
+            <div class="item-sub">${escapeHtml(c.nextAction||"—")}</div>
+          </div>
+        </div>
+        <span class="badge">${escapeHtml(c.status)}</span>
       </div>
-    </div>
-  </body>
+
+      <div class="item">
+        <div class="item-left">
+          <div class="dot ${c.mpiAuth ? "ok":""}"></div>
+          <div>
+            <div class="item-title">MPI verbal authorization</div>
+            <div class="item-sub">${c.mpiAuth ? `Recorded by ${escapeHtml(c.mpiAuth.rep)} at ${fmt(c.mpiAuth.at)}` : "Not recorded"}</div>
+          </div>
+        </div>
+        <span class="badge ${c.mpiAuth ? "ok":"warn"}">${c.mpiAuth ? "Recorded":"Missing"}</span>
+      </div>
+    `;
+
+    renderTechPanel(c);
+    renderPartsPanel(c);
+    renderMaterialsPanel(c);
+    renderChecklistPanel(c);
+    renderEvidencePanel(c);
+    renderAuditPanel(c);
+  }
+
+  function renderTechPanel(c){
+    const can = canTechWork() || canEditClaim();
+    const html = `
+      <div class="small">Assign techs, record tasks, and log install-damage responsibility (pilot).</div>
+
+      <div class="actions">
+        <button class="btn btn-outline" ${can ? "" : "disabled"} onclick="addTechTask()">+ Assign Tech Task</button>
+        <button class="btn btn-outline" ${can ? "" : "disabled"} onclick="endTechTask()">End Latest Task</button>
+        <button class="btn btn-outline" ${canApproveParts() ? "" : "disabled"} onclick="flagInstallDamage()">Flag Install-Damage (Admin)</button>
+        <button class="btn btn-outline" onclick="addEvidence('Tech')">Add Evidence (Logged)</button>
+      </div>
+
+      <div class="hr"></div>
+      ${c.techAssignments.length ? c.techAssignments.map(t=>`
+        <div class="item">
+          <div class="item-left">
+            <div class="dot ok"></div>
+            <div>
+              <div class="item-title">${escapeHtml(t.techName)} — ${escapeHtml(t.task)}</div>
+              <div class="item-sub">Start: ${fmt(t.startedAt)}${t.endedAt ? ` • End: ${fmt(t.endedAt)}` : " • In progress"}</div>
+              ${t.installDamage ? `<div class="item-sub"><b style="color:var(--danger)">Install Damage:</b> ${escapeHtml(t.installDamage)}</div>` : ""}
+            </div>
+          </div>
+          <span class="badge">${t.endedAt ? "Done":"Active"}</span>
+        </div>
+      `).join("") : `<div class="small">No tech tasks yet.</div>`}
+    `;
+    document.getElementById("panel-tech").innerHTML = html;
+  }
+
+  function addTechTask(){
+    const c = getClaim(state.currentClaimId);
+    if(!(canTechWork() || canEditClaim())){ alert("Tech/Admin/Estimator only."); addLog("Blocked: Add tech task","Role restricted"); return; }
+    const techName = prompt("Tech name (or initials):");
+    if(!techName) return;
+    const task = prompt("Task (e.g., R&R bumper, repair quarter, blend door):");
+    if(!task) return;
+    c.techAssignments.unshift({ id: uid(), techName, task, startedAt: nowISO(), endedAt: null, installDamage: null });
+    c.lastActivity = nowISO();
+    saveState();
+    addLog("Assigned tech task", `${techName}: ${task}`);
+    renderAll(false);
+  }
+
+  function endTechTask(){
+    const c = getClaim(state.currentClaimId);
+    if(!(canTechWork() || canEditClaim())){ alert("Tech/Admin/Estimator only."); addLog("Blocked: End tech task","Role restricted"); return; }
+    const active = c.techAssignments.find(t=>!t.endedAt);
+    if(!active){ alert("No active task."); return; }
+    active.endedAt = nowISO();
+    c.lastActivity = nowISO();
+    saveState();
+    addLog("Ended tech task", `${active.techName}: ${active.task}`);
+    renderAll(false);
+  }
+
+  function flagInstallDamage(){
+    const c = getClaim(state.currentClaimId);
+    if(!canApproveParts()){ alert("Admin only."); addLog("Blocked: Install-damage","Role restricted"); return; }
+    const active = c.techAssignments.find(t=>!t.endedAt) || c.techAssignments[0];
+    if(!active){ alert("No tech task exists."); return; }
+    const detail = prompt("Describe install-damage / extra work caused:");
+    if(!detail) return;
+    active.installDamage = detail;
+    c.lastActivity = nowISO();
+    saveState();
+    addLog("Flagged install-damage", `${active.techName}: ${detail}`);
+    renderAll(false);
+  }
+
+  function renderPartsPanel(c){
+    const html = `
+      <div class="small">
+        Parts workflow supports: MPI-approved parts, “approval required” (verbal auth), shop-expense deltas (Admin), and install-damage parts (Admin).
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-outline" ${isUnlocked() ? "" : "disabled"} onclick="addPartRequest('MPI Approved')">+ MPI Approved Part</button>
+        <button class="btn btn-outline" ${isUnlocked() ? "" : "disabled"} onclick="addPartRequest('Approval Required')">+ Approval Required</button>
+        <button class="btn btn-outline" ${canApproveParts() ? "" : "disabled"} onclick="addPartRequest('Shop Expense Delta')">+ Shop-Expense Delta (Admin)</button>
+        <button class="btn btn-outline" ${canApproveParts() ? "" : "disabled"} onclick="addPartRequest('Install Damage')">+ Install-Damage (Admin)</button>
+      </div>
+
+      <div class="hr"></div>
+      ${c.partsRequests.length ? c.partsRequests.map(p=>`
+        <div class="item">
+          <div class="item-left">
+            <div class="dot ${p.status==="Approved" ? "ok":""}"></div>
+            <div>
+              <div class="item-title">${escapeHtml(p.partName)} <span class="badge">${escapeHtml(p.type)}</span></div>
+              <div class="item-sub">Vendor: ${escapeHtml(p.vendor||"—")} • Cost: ${escapeHtml(p.cost||"—")} • Requested by: ${escapeHtml(p.requestedBy)}</div>
+              ${p.type==="Approval Required" && !p.mpiAuthMasked ? `<div class="item-sub"><b style="color:var(--warn)">Needs MPI auth code</b></div>` : ""}
+              ${p.type==="Shop Expense Delta" ? `<div class="item-sub"><b>Shop pays:</b> ${escapeHtml(p.delta||"—")}</div>` : ""}
+              ${p.reason ? `<div class="item-sub">${escapeHtml(p.reason)}</div>` : ""}
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+            <span class="badge ${p.status==="Approved"?"ok":(p.status==="Denied"?"danger":"warn")}">${escapeHtml(p.status)}</span>
+            <button class="btn btn-outline" ${canApproveParts() ? "" : "disabled"} onclick="approvePart('${p.id}')">Approve</button>
+          </div>
+        </div>
+      `).join("") : `<div class="small">No parts requests yet.</div>`}
+    `;
+    document.getElementById("panel-parts").innerHTML = html;
+  }
+
+  function addPartRequest(type){
+    const c = getClaim(state.currentClaimId);
+    if(!isUnlocked()){ alert("Unlock with PIN first."); addLog("Blocked: Add part","Locked"); return; }
+    if((type==="Shop Expense Delta" || type==="Install Damage") && !canApproveParts()){
+      alert("Admin only."); addLog("Blocked: Add part","Role restricted"); return;
+    }
+    const partName = prompt("Part name:");
+    if(!partName) return;
+    const vendor = prompt("Vendor (optional):") || "";
+    const cost = prompt("Cost (optional):") || "";
+    const reason = prompt("Notes/Reason (optional):") || "";
+
+    const p = {
+      id: uid(),
+      type,
+      partName,
+      vendor,
+      cost,
+      reason,
+      requestedBy: `${getUser().name} (${role()})`,
+      status: (type==="MPI Approved") ? "Approved" : "Pending",
+      createdAt: nowISO(),
+      mpiAuthMasked: null,
+      delta: null
+    };
+
+    if(type==="Approval Required"){
+      // if claim has auth, tie it; otherwise mark needed
+      if(c.mpiAuth?.code) p.mpiAuthMasked = mask(c.mpiAuth.code);
+    }
+    if(type==="Shop Expense Delta"){
+      p.delta = prompt("Enter shop-paid price difference (delta):") || "";
+    }
+
+    c.partsRequests.unshift(p);
+    c.lastActivity = nowISO();
+    saveState();
+    addLog("Created part request", `${type}: ${partName}`);
+    renderAll(false);
+  }
+
+  function approvePart(partId){
+    const c = getClaim(state.currentClaimId);
+    if(!canApproveParts()){ alert("Admin only."); addLog("Blocked: Approve part","Role restricted"); return; }
+    const p = c.partsRequests.find(x=>x.id===partId);
+    if(!p) return;
+
+    // enforce: approval required needs MPI verbal auth on file
+    if(p.type==="Approval Required" && !c.mpiAuth?.code){
+      alert("MPI verbal authorization required on the claim first.");
+      addLog("Denied part approval", "Missing MPI auth code");
+      return;
+    }
+    if(p.type==="Approval Required" && !p.mpiAuthMasked) p.mpiAuthMasked = mask(c.mpiAuth.code);
+
+    p.status = "Approved";
+    c.lastActivity = nowISO();
+    saveState();
+    addLog("Approved part request", `${p.type}: ${p.partName}`);
+    renderAll(false);
+  }
+
+  function renderMaterialsPanel(c){
+    const html = `
+      <div class="small">
+        Materials requests: vendor order (with shop account details) or “Materials from stock” (no vendor) — both logged.
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-outline" ${isUnlocked() ? "" : "disabled"} onclick="addMaterialRequest('Vendor Order')">+ Vendor Materials</button>
+        <button class="btn btn-outline" ${isUnlocked() ? "" : "disabled"} onclick="addMaterialRequest('From Stock')">+ Materials from Stock</button>
+        <button class="btn btn-outline" ${canApproveMaterials() ? "" : "disabled"} onclick="approveMaterial()">Approve Materials (Estimator/Admin)</button>
+        <button class="btn btn-outline" onclick="addEvidence('Materials')">Add Evidence (Logged)</button>
+      </div>
+
+      <div class="hr"></div>
+      ${c.materialsRequests.length ? c.materialsRequests.map(m=>`
+        <div class="item">
+          <div class="item-left">
+            <div class="dot ${m.status==="Approved" ? "ok":""}"></div>
+            <div>
+              <div class="item-title">${escapeHtml(m.item)} <span class="badge">${escapeHtml(m.type)}</span></div>
+              <div class="item-sub">
+                Vendor: ${escapeHtml(m.vendor||"—")} • Account: ${escapeHtml(m.account||"—")} • Qty/Cost: ${escapeHtml(m.qtyCost||"—")}
+              </div>
+              ${m.notes ? `<div class="item-sub">${escapeHtml(m.notes)}</div>` : ""}
+            </div>
+          </div>
+          <span class="badge ${m.status==="Approved"?"ok":"warn"}">${escapeHtml(m.status)}</span>
+        </div>
+      `).join("") : `<div class="small">No materials requests yet.</div>`}
+    `;
+    document.getElementById("panel-materials").innerHTML = html;
+  }
+
+  function addMaterialRequest(type){
+    const c = getClaim(state.currentClaimId);
+    if(!isUnlocked()){ alert("Unlock with PIN first."); addLog("Blocked: Add materials","Locked"); return; }
+    const item = prompt("Material item (e.g., seam sealer, adhesive, clips):");
+    if(!item) return;
+    let vendor="", account="";
+    if(type==="Vendor Order"){
+      vendor = prompt("Vendor name:") || "";
+      account = prompt("Account # (optional):") || "";
+    }
+    const qtyCost = prompt("Qty/Cost (optional):") || "";
+    const notes = prompt("Notes (optional):") || "";
+
+    c.materialsRequests.unshift({
+      id: uid(), type, item, vendor, account, qtyCost, notes,
+      status:"Pending", requestedBy:`${getUser().name} (${role()})`, at: nowISO()
+    });
+    c.lastActivity = nowISO();
+    saveState();
+    addLog("Created materials request", `${type}: ${item}`);
+    renderAll(false);
+  }
+
+  function approveMaterial(){
+    const c = getClaim(state.currentClaimId);
+    if(!canApproveMaterials()){ alert("Estimator/Admin only."); addLog("Blocked: Approve materials","Role restricted"); return; }
+    const pending = c.materialsRequests.find(x=>x.status==="Pending");
+    if(!pending){ alert("No pending materials request."); return; }
+    pending.status="Approved";
+    c.lastActivity=nowISO();
+    saveState();
+    addLog("Approved materials request", `${pending.type}: ${pending.item}`);
+    renderAll(false);
+  }
+
+  function renderChecklistPanel(c){
+    const total = c.checklist.length;
+    const done = c.checklist.filter(x=>x.done).length;
+    document.getElementById("panel-checklist").innerHTML = `
+      <div class="badge-row">
+        <span class="badge">Progress: ${done}/${total}</span>
+        <span class="badge ${c.mpiAuth?"ok":"warn"}">Verbal Auth: ${c.mpiAuth? "On file":"Missing"}</span>
+      </div>
+      <div style="height:10px"></div>
+      ${c.checklist.map(it=>`
+        <div class="item" onclick="toggleChecklist('${it.key}')">
+          <div class="item-left">
+            <div class="dot ${it.done?"ok":""}"></div>
+            <div>
+              <div class="item-title">${escapeHtml(it.label)}</div>
+              <div class="item-sub">${escapeHtml(it.note)}</div>
+            </div>
+          </div>
+          <span class="badge ${it.done?"ok":"warn"}">${it.done?"Submitted":"Missing"}</span>
+        </div>
+      `).join("")}
+      <div class="small" style="margin-top:10px;">
+        Tip: Auto-suggest consumables by operation can be added later (phase 2).
+      </div>
+    `;
+  }
+
+  function renderChecklist(){
+    const c = getClaim(state.currentClaimId);
+    document.getElementById("checkClaimBadge").textContent = `Claim: ${c.id}`;
+    const total = c.checklist.length;
+    const done = c.checklist.filter(x=>x.done).length;
+    document.getElementById("checkProgressBadge").textContent = `Progress: ${done}/${total}`;
+
+    const el = document.getElementById("checklistItems");
+    el.innerHTML = c.checklist.map(it=>`
+      <div class="item" onclick="toggleChecklist('${it.key}')">
+        <div class="item-left">
+          <div class="dot ${it.done?"ok":""}"></div>
+          <div>
+            <div class="item-title">${escapeHtml(it.label)}</div>
+            <div class="item-sub">${escapeHtml(it.note)}</div>
+          </div>
+        </div>
+        <span class="badge ${it.done?"ok":"warn"}">${it.done?"Submitted":"Missing"}</span>
+      </div>
+    `).join("");
+
+    document.getElementById("btnChecklistPortal").disabled = !canOpenPortal();
+    document.getElementById("btnChecklistAuth").disabled = !(isUnlocked() && (role()==="Estimator"||role()==="Admin"));
+    document.getElementById("btnAddEvidence").disabled = !isUnlocked();
+
+    renderClaimAuditInto("auditLogChecklist");
+  }
+
+  function toggleChecklist(key){
+    const c = getClaim(state.currentClaimId);
+    if(!isUnlocked() || role()==="Auditor"){
+      alert("This role cannot modify checklist in the pilot.");
+      addLog("Blocked: Toggle checklist","Role restricted");
+      return;
+    }
+    const it = c.checklist.find(x=>x.key===key);
+    if(!it) return;
+    it.done=!it.done;
+    c.lastActivity=nowISO();
+    saveState();
+    addLog("Toggled checklist item", `${key} => ${it.done?"DONE":"MISSING"}`);
+    renderAll(false);
+  }
+
+  function renderEvidencePanel(c){
+    document.getElementById("panel-evidence").innerHTML = `
+      <div class="small">
+        Pilot evidence is logged as entries (real file upload comes with the app/back-end later).
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-outline" ${isUnlocked() ? "" : "disabled"} onclick="addEvidence('Evidence')">+ Add Evidence Entry</button>
+        <button class="btn btn-outline" ${isUnlocked() ? "" : "disabled"} onclick="tagEvidenceToChecklist()">Tag Evidence to Checklist</button>
+        <button class="btn btn-outline" onclick="openChecklist()">Open Checklist</button>
+        <button class="btn btn-outline" onclick="exportDataJSON()">Export Data (JSON)</button>
+      </div>
+
+      <div class="hr"></div>
+      ${c.evidence.length ? c.evidence.map(e=>`
+        <div class="item">
+          <div class="item-left">
+            <div class="dot ok"></div>
+            <div>
+              <div class="item-title">${escapeHtml(e.label)} <span class="badge">${escapeHtml(e.type)}</span></div>
+              <div class="item-sub">By: ${escapeHtml(e.by)} • ${fmt(e.at)}</div>
+              ${e.notes ? `<div class="item-sub">${escapeHtml(e.notes)}</div>` : ""}
+              ${e.checklistKey ? `<div class="item-sub"><b>Tagged to:</b> ${escapeHtml(e.checklistKey)}</div>` : ""}
+            </div>
+          </div>
+          <span class="badge ok">Logged</span>
+        </div>
+      `).join("") : `<div class="small">No evidence entries yet.</div>`}
+    `;
+  }
+
+  function addEvidence(source){
+    const c = getClaim(state.currentClaimId);
+    if(!isUnlocked()){ alert("Unlock with PIN first."); addLog("Blocked: Add evidence","Locked"); return; }
+    if(role()==="Auditor"){ alert("Auditor cannot add evidence in pilot."); addLog("Blocked: Add evidence","Role restricted"); return; }
+
+    const type = prompt("Evidence type (Photo / PDF / Note):","Photo") || "Note";
+    const label = prompt("Evidence label (e.g., Pre-repair photo set):");
+    if(!label) return;
+    const notes = prompt("Notes (optional):") || "";
+
+    c.evidence.unshift({ id: uid(), type, label, notes, checklistKey:null, by:`${getUser().name} (${role()})`, at: nowISO(), source });
+    c.lastActivity=nowISO();
+    saveState();
+    addLog("Added evidence entry", `${type}: ${label}`);
+    renderAll(false);
+  }
+
+  function tagEvidenceToChecklist(){
+    const c = getClaim(state.currentClaimId);
+    if(!isUnlocked()){ alert("Unlock with PIN first."); return; }
+    if(c.evidence.length===0){ alert("No evidence to tag yet."); return; }
+    const key = prompt("Enter checklist key to tag (estimate/approvals/verbal/pre/post):");
+    if(!key) return;
+    const it = c.checklist.find(x=>x.key===key);
+    if(!it){ alert("Checklist key not found."); return; }
+    c.evidence[0].checklistKey = key;
+    c.lastActivity=nowISO();
+    saveState();
+    addLog("Tagged evidence to checklist", `Evidence: ${c.evidence[0].label} → ${key}`);
+    renderAll(false);
+  }
+
+  function renderAuditPanel(c){
+    document.getElementById("panel-audit").innerHTML = `
+      <div class="small">Append-only style audit log (pilot stored locally). Includes time/date, user, role, claim.</div>
+      <div class="actions">
+        <button class="btn btn-outline" onclick="exportLogsCSV()">Export Logs (CSV)</button>
+        <button class="btn btn-outline" onclick="exportDataJSON()">Export Data (JSON)</button>
+        <button class="btn btn-outline" onclick="openAdmin()">Admin</button>
+        <button class="btn btn-primary" onclick="openDashboard()">Dashboard</button>
+      </div>
+      <div class="log">
+        <div class="log-title">Audit Log (Claim)</div>
+        <div id="auditLogClaim"></div>
+      </div>
+    `;
+    renderClaimAuditInto("auditLogClaim");
+  }
+
+  function renderClaimAuditInto(targetId){
+    const cId = state.currentClaimId;
+    const list = state.auditLog.filter(x=>x.claimId===cId).slice(0,20);
+    document.getElementById(targetId).innerHTML = renderLogHTML(list);
+  }
+
+  // ===== ADMIN RENDER =====
+  function renderAdmin(){
+    const ul = document.getElementById("userList");
+    ul.innerHTML = state.users.map(u=>`
+      <div class="item">
+        <div class="item-left">
+          <div class="dot ok"></div>
+          <div>
+            <div class="item-title">${escapeHtml(u.name)} <span class="badge">${escapeHtml(u.role)}</span></div>
+            <div class="item-sub">PIN: <span class="mono">${escapeHtml(u.pin)}</span></div>
+          </div>
+        </div>
+        <span class="badge ${u.enabled?"ok":"danger"}">${u.enabled?"Enabled":"Disabled"}</span>
+      </div>
+    `).join("");
+
+    document.getElementById("auditLogAdmin").innerHTML = renderLogHTML(state.auditLog.slice(0,25));
+  }
+
+  function rotatePins(){
+    if(!(isUnlocked() && role()==="Admin")){
+      alert("Admin only."); addLog("Blocked: Rotate PINs","Role restricted"); return;
+    }
+    state.users.forEach(u=>{
+      u.pin = String(Math.floor(1000 + Math.random()*9000));
+    });
+    saveState();
+    addLog("Rotated all PINs");
+    populateUserSelect();
+    renderAdmin();
+  }
+
+  function resetDemo(){
+    if(!(isUnlocked() && role()==="Admin")){
+      alert("Admin only."); addLog("Blocked: Reset demo","Role restricted"); return;
+    }
+    if(!confirm("Reset demo data and logs?")) return;
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  }
+
+  // ===== EXPORTS =====
+  function exportLogsCSV(){
+    if(!isUnlocked()){ alert("Unlock with PIN first."); return; }
+    // Accountant/Admin friendly in pilot
+    if(!(role()==="Admin" || role()==="Accountant" || role()==="Estimator")){
+      alert("Export limited to Estimator/Admin/Accountant in pilot."); addLog("Blocked: Export logs","Role restricted"); return;
+    }
+    const rows = [["timestamp","user","role","claimId","action","details"]];
+    state.auditLog.slice().reverse().forEach(x=>{
+      rows.push([x.at, x.userName, x.role, x.claimId, x.action, x.details]);
+    });
+    const csv = rows.map(r => r.map(cell => `"${String(cell??"").replaceAll('"','""')}"`).join(",")).join("\n");
+    downloadText(`OSC_AuditLog_${new Date().toISOString().slice(0,10)}.csv`, csv);
+    addLog("Exported audit log CSV");
+  }
+
+  function exportDataJSON(){
+    if(!isUnlocked()){ alert("Unlock with PIN first."); return; }
+    if(!(role()==="Admin" || role()==="Accountant" || role()==="Estimator")){
+      alert("Export limited to Estimator/Admin/Accountant in pilot."); addLog("Blocked: Export data","Role restricted"); return;
+    }
+    const payload = {
+      exportedAt: nowISO(),
+      product: "One Stop Compliance – RepairScope Platform",
+      confidential: true,
+      users: state.users.map(u=>({id:u.id,name:u.name,role:u.role,enabled:u.enabled})), // exclude pins
+      claims: state.claims,
+      auditLog: state.auditLog
+    };
+    downloadText(`OSC_PilotData_${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(payload, null, 2));
+    addLog("Exported pilot data JSON");
+  }
+
+  function downloadText(filename, text){
+    const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 0);
+  }
+
+  // ===== UTIL =====
+  function openModal(id){ document.getElementById(id).classList.remove("hidden"); }
+  function closeModal(id){ document.getElementById(id).classList.add("hidden"); }
+  document.getElementById("authModal").addEventListener("click", e=>{ if(e.target.id==="authModal") closeModal("authModal"); });
+  document.getElementById("createClaimModal").addEventListener("click", e=>{ if(e.target.id==="createClaimModal") closeModal("createClaimModal"); });
+
+  function escapeHtml(str){
+    return String(str??"")
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+      .replaceAll("\"","&quot;").replaceAll("'","&#039;");
+  }
+
+  function renderLogHTML(list){
+    if(!list || list.length===0){
+      return `<div class="log-item"><div>No events yet.</div><div class="log-time">Actions will appear here.</div></div>`;
+    }
+    return list.map(x=>{
+      const d = x.details ? ` • ${escapeHtml(x.details)}` : "";
+      return `
+        <div class="log-item">
+          <div><b>${escapeHtml(x.action)}</b>${d}</div>
+          <div class="log-time">${fmt(x.at)} • ${escapeHtml(x.userName)} • ${escapeHtml(x.role)} • Claim: ${escapeHtml(x.claimId)}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  // ===== MAIN RENDER =====
+  function renderAll(withStatus){
+    populateUserSelect();
+    renderClaimSelect();
+    renderKPIs();
+    renderDashboardClaims();
+
+    // who am I
+    const u = getUser();
+    document.getElementById("whoUser").textContent = u ? u.name : "—";
+    document.getElementById("whoRole").textContent = u ? u.role : "—";
+    document.getElementById("loginStatus").textContent = isUnlocked() ? "UNLOCKED" : "LOCKED";
+
+    // locks
+    const locked = !isUnlocked();
+    document.getElementById("claimSelect").disabled = locked;
+    // allow viewing dashboard even locked, but disable edits
+    // render logs
+    document.getElementById("auditLogDash").innerHTML = renderLogHTML(state.auditLog.slice(0,14));
+
+    if(!document.getElementById("claimsCard").classList.contains("hidden")) renderWorkspace();
+    if(!document.getElementById("checklistCard").classList.contains("hidden")) renderChecklist();
+    if(!document.getElementById("adminCard").classList.contains("hidden")) renderAdmin();
+    saveState();
+  }
+
+  // ===== INIT =====
+  renderAll(true);
+  openDashboard();
+</script>
+</body>
 </html>
-```0
